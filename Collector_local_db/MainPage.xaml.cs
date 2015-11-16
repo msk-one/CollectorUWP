@@ -32,7 +32,8 @@ namespace Collector_local_db
         {
             using (var db = new CollectorContext())
             {
-                //Blogs.ItemsSource = db.Blogs.ToList();
+                Blogs.ItemsSource = db.Entries.ToList();
+                
             }
         }
 

@@ -14,19 +14,45 @@
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="121" VerticalAlignment="Top" Width="1920" Background="#FF154710">
             <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="COLLECTOR" FontSize="96" Margin="0,-20,0,29" Foreground="#FFC9ACAC"/>
         </Border>
-        <!--<StackPanel>
-            <TextBox Name="NewBlogUrl"></TextBox>
-            <ListView Name="Blogs">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Url}" />
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>-->
+
+
+        <ScrollBar x:Name="scrollBar"/>
+       
+       
+        <Pivot  Margin="0,112,0,0" >
+            <PivotItem  Header="Borrow">
+                
+                <ListView Name="Blogs" Margin="0,28,0,163">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+
+                            <TextBlock Text="{Binding Title}"  />
+                            
+                            
+                            
+                        </DataTemplate>
+
+                    </ListView.ItemTemplate>
+                    <TextBlock x:Name="textBlock1" Height="100" TextWrapping="Wrap" Text="TextBlock" Width="100"/>
+                </ListView>
+            </PivotItem>
+
+
+
+
+
+
+
+            <PivotItem Header="lend">
+                <Grid/>
+                    
+            </PivotItem>
+        </Pivot>
+
+
+
         <Ellipse Fill="#FF5C5C78" Tag="/Add_debt.xaml" HorizontalAlignment="Right" Height="62" Margin="0,0,29,34" Stroke="Black" VerticalAlignment="Bottom" Width="65" PointerReleased="Button_Click"/>
         <Path Data="M26,0 L31,0 L31,22 L53,22 L53,27 L31,27 L31,50 L26,50 L26,27 L0,27 L0,22 L26,22 z" Fill="#FFD7D8E8" HorizontalAlignment="Right" Height="23.75" Margin="0,0,49.75,53.25" Stretch="Fill" Stroke="Black" StrokeThickness="0" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="25"/>
-
-        <!--</StackPanel>-->
 
 
 

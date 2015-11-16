@@ -47,8 +47,8 @@ namespace Collector_local_db
                     Desc = descriptionBox.Text,
                     Priority = prioritySwitch.IsOn ? 1 : 0,
                     Amount =  float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat)
-                   
 
+                    
             };
                 db.Entries.Add(debt);
 
@@ -62,7 +62,7 @@ namespace Collector_local_db
         private void Cancel_click(object sender, RoutedEventArgs e)
         {
 
-            this.Content = new MainPage(); 
+            this.Content = new MainPage();
 
 
 
