@@ -84,8 +84,9 @@ namespace Collector_local_db
                     choice.Object = true;
                     choice.Borrowed = true;
                     
-                    Add_debt mynewPage = new Add_debt(choice);
-                    this.Content = mynewPage;
+                    //Add_debt mynewPage = new Add_debt(choice);
+                    //this.Content = mynewPage;
+                    this.Frame.Navigate(typeof(Add_debt), choice);
 
                 }
 
@@ -93,9 +94,9 @@ namespace Collector_local_db
                 {
                     choice.Object = false;
                     choice.Borrowed = true;
-                    Add_debt mynewPage = new Add_debt(choice);
-                    this.Content = mynewPage;
-
+                    //Add_debt mynewPage = new Add_debt(choice);
+                    //this.Content = mynewPage;
+                    this.Frame.Navigate(typeof(Add_debt), choice);
                 }
 
             }
@@ -111,8 +112,9 @@ namespace Collector_local_db
                 {
                     choice.Object = true;
                     choice.Borrowed = false;
-                    Add_debt mynewPage = new Add_debt(choice);
-                    this.Content = mynewPage;
+                    //Add_debt mynewPage = new Add_debt(choice);
+                    this.Frame.Navigate(typeof (Add_debt), choice);
+                    //this.Content = mynewPage;
 
                 }
 
@@ -121,9 +123,9 @@ namespace Collector_local_db
                     choice.Object = false;
                     choice.Borrowed = false;
 
-                    Add_debt mynewPage = new Add_debt(choice);
-
-                    this.Content = mynewPage;
+                    //Add_debt mynewPage = new Add_debt(choice);
+                    this.Frame.Navigate(typeof(Add_debt), choice);
+                    //this.Content = mynewPage;
 
                 }
 
@@ -139,5 +141,6 @@ namespace Collector_local_db
 
 
         }
+
     }
 }

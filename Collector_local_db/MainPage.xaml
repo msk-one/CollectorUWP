@@ -23,7 +23,7 @@
         <Pivot  Margin="0,112,142,0" >
             <PivotItem  Header="Borrow" Margin="12,0,100,0">
 
-                <ListView Name="Blogs" Margin="0,28,885,43">
+                <ListView Name="Blogs" Margin="0,28,67,43">
                     <ListView.ItemTemplate>
                         <DataTemplate>
 

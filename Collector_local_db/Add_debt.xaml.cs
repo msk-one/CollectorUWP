@@ -29,9 +29,6 @@ namespace Collector_local_db
     /// </summary>
     /// 
 
-
-
-
     public sealed partial class Add_debt : Page
     {
 
@@ -39,17 +36,19 @@ namespace Collector_local_db
         private bool is_borrowed = false; 
         public Add_debt(Choice choice)
         {
-            is_object = choice.Object;
-            is_borrowed = choice.Borrowed;
             this.InitializeComponent();
+            is_object = choice.Object;
+            is_borrowed = choice.Borrowed;            
         }
 
         public Add_debt()
         {
+            this.InitializeComponent();
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            //bool cgb = Frame.CanGoBack;
             if (is_borrowed && is_object)
                 welcomeBlock.Text = "You borrowed an Object.";
             else if (is_borrowed && !is_object)
@@ -63,13 +62,20 @@ namespace Collector_local_db
             {
                 currencyBox.Visibility = Visibility.Collapsed;
                 amountBox.Width = 362;
-
-
-
-
             }
 
 
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.Parameter is Choice)
+            {
+                Choice chc = (Choice) e.Parameter;
+                is_object = chc.Object;
+                is_borrowed = chc.Borrowed;
+            }
+            base.OnNavigatedTo(e);
         }
 
 
@@ -118,23 +124,18 @@ namespace Collector_local_db
 
                     };
                     db.Entries.Add(debt);
-
                     db.SaveChanges();
-
-
-
                 }
 
-                this.Content = new MainPage();
+               
+               Frame.Navigate(typeof(MainPage));
             }
         }
 
         private void Cancel_click(object sender, RoutedEventArgs e)
         {
-
-            this.Content = new MainPage();
-           
-
+            Frame.Navigate(typeof(MainPage));
+            //this.Content = new MainPage();
         }
 
         private async void photoButton_Click(object sender, RoutedEventArgs e)
