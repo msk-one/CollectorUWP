@@ -5,9 +5,34 @@
     xmlns:local="using:Collector_local_db"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Loaded="Page_Loaded">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="#FFCFB9B9">
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="1920" Background="#FF154710">
+
+            <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="COLLECTOR   - settings" FontSize="30" Margin="0,0,0,0" Foreground="#FFC9ACAC"/>
+        </Border>
+
+
+        <TextBox x:Name="CategoryBox" HorizontalAlignment="Left" Margin="141,315,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="Write Category for objects"/>
+
+        <ListView Name="Blogs" Margin="141,403,271,43">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+
+                    <TextBlock Text="{Binding Cname}" Width="139" MinWidth="160"  />
+
+
+
+                </DataTemplate>
+
+            </ListView.ItemTemplate>
+            <TextBlock x:Name="textBlock1" Height="100" TextWrapping="Wrap" Text="TextBlock" Width="100"/>
+            <ScrollBar x:Name="scrollBar" Height="100" Width="100"/>
+        </ListView>
+        <ScrollBar x:Name="scrollBar1" HorizontalAlignment="Left" Margin="222,333,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="579,333,0,0" VerticalAlignment="Top" Click="button_Click"/>
 
     </Grid>
 </Page>

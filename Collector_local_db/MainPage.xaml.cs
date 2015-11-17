@@ -74,12 +74,12 @@ namespace Collector_local_db
             if ((int)res.Id == 0)
             {
                 msgbox.Commands.Clear();
-                MessageDialog msgbox2 = new MessageDialog("What did you borrowed ?", "User Response");
+                MessageDialog msgbox2 = new MessageDialog("What did you borrowed ?", "");
                 msgbox2.Commands.Add(new UICommand { Label = "Object", Id = 0 });
                 msgbox2.Commands.Add(new UICommand { Label = "Money", Id = 1 });
-                await msgbox2.ShowAsync();
+               var res2 = await msgbox2.ShowAsync();
 
-                if ((int)res.Id == 0)
+                if ((int)res2.Id == 0)
                 {
                     choice.Object = true;
                     choice.Borrowed = true;
@@ -90,7 +90,7 @@ namespace Collector_local_db
 
                 }
 
-                if ((int)res.Id == 1)
+                if ((int)res2.Id == 1)
                 {
                     choice.Object = false;
                     choice.Borrowed = true;
@@ -103,12 +103,12 @@ namespace Collector_local_db
             if ((int)res.Id == 1)
             {
                 msgbox.Commands.Clear();
-                MessageDialog msgbox3 = new MessageDialog("What did you Lend ?", "User Response");
-                msgbox3.Commands.Add(new UICommand { Label = "Object", Id = 1 });
-                msgbox3.Commands.Add(new UICommand { Label = "Money", Id = 2 });
-                await msgbox3.ShowAsync();
+                MessageDialog msgbox3 = new MessageDialog("What did you Lend ?", "");
+                msgbox3.Commands.Add(new UICommand { Label = "Object", Id = 0 });
+                msgbox3.Commands.Add(new UICommand { Label = "Money", Id = 1 });
+                var res2 = await msgbox3.ShowAsync();
 
-                if ((int)res.Id == 0)
+                if ((int)res2.Id == 0)
                 {
                     choice.Object = true;
                     choice.Borrowed = false;
@@ -118,7 +118,7 @@ namespace Collector_local_db
 
                 }
 
-                if ((int)res.Id == 1)
+                if ((int)res2.Id == 1)
                 {
                     choice.Object = false;
                     choice.Borrowed = false;
@@ -132,7 +132,7 @@ namespace Collector_local_db
               
                 if ((int)res.Id == 2)
                 {
-                    MessageDialog msgbox2 = new MessageDialog("Nevermind then... :|", "User Response");
+                    MessageDialog msgbox2 = new MessageDialog("Nevermind then... :|", "");
                     await msgbox2.ShowAsync();
                 }
 
@@ -142,5 +142,9 @@ namespace Collector_local_db
 
         }
 
+        private void image_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(Settings));
+        }
     }
 }

@@ -26,5 +26,35 @@ namespace Collector_local_db
         {
             this.InitializeComponent();
         }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            using (var db = new CollectorContext())
+            {
+                Blogs.ItemsSource = db.Categories.ToList();
+
+            }
+
+
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            using (var db = new CollectorContext())
+            {
+                var debt = new Category
+                {
+
+                    Cname = CategoryBox.Text
+
+
+
+                };
+                db.Categories.Add(debt);
+                db.SaveChanges();
+
+                Blogs.ItemsSource = db.Categories.ToList();
+            }
+        }
     }
 }

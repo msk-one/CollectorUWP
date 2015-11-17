@@ -38,7 +38,7 @@ namespace Collector_local_db
         {
             this.InitializeComponent();
             is_object = choice.Object;
-            is_borrowed = choice.Borrowed;            
+            is_borrowed = choice.Borrowed;
         }
 
         public Add_debt()
@@ -48,13 +48,14 @@ namespace Collector_local_db
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            
             //bool cgb = Frame.CanGoBack;
             if (is_borrowed && is_object)
                 welcomeBlock.Text = "You borrowed an Object.";
             else if (is_borrowed && !is_object)
                 welcomeBlock.Text = "You borrowed some Money.";
             else if (!is_borrowed && is_object)
-                welcomeBlock.Text = "You lend some Object.";
+                welcomeBlock.Text = "You lend an Object.";
             else if (!is_borrowed && !is_object)
                 welcomeBlock.Text = "You lend some Money.";
 
@@ -62,8 +63,13 @@ namespace Collector_local_db
             {
                 currencyBox.Visibility = Visibility.Collapsed;
                 amountBox.Width = 362;
-            }
 
+            }
+            else
+            {
+                categoryBox.Visibility = Visibility.Collapsed;
+                photoButton.Visibility = Visibility.Collapsed;
+            }
 
         }
 
@@ -82,7 +88,7 @@ namespace Collector_local_db
         private async void Add_debt_click(object sender, RoutedEventArgs e)
         {
             bool fail = false;
-            float temp;
+            float temp =0;
             try
             {
                 temp = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
@@ -118,7 +124,7 @@ namespace Collector_local_db
                         Who = nameBox.Text,
                         Desc = descriptionBox.Text,
                         Priority = prioritySwitch.IsOn ? 1 : 0,
-
+                        Amount = temp
 
 
 
@@ -140,17 +146,21 @@ namespace Collector_local_db
 
         private async void photoButton_Click(object sender, RoutedEventArgs e)
         {
+            StorageFile file = null;
             FileOpenPicker picker = new FileOpenPicker();
             picker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
             picker.FileTypeFilter.Add(".jpg");
             picker.FileTypeFilter.Add(".jpeg");
             picker.FileTypeFilter.Add(".png");
-            StorageFile file = await picker.PickSingleFileAsync();
+            try {
+                 file = await picker.PickSingleFileAsync();
+                BitmapImage img = new BitmapImage();
+                img = await LoadImage(file);
 
-            BitmapImage img = new BitmapImage();
-            img = await LoadImage(file);
-
-            image.Source = img;
+                image.Source = img;
+            }
+            catch { }
+            
 
         }
 
