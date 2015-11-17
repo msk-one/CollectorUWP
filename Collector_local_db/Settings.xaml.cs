@@ -57,10 +57,8 @@ namespace Collector_local_db
                 else
                 {
                     MessageDialog msgbox = new MessageDialog("This category already exists");
-
                     msgbox.Commands.Clear();
                     msgbox.Commands.Add(new UICommand { Label = "OK", Id = 1 });
-
                     var res = await msgbox.ShowAsync();
                 }
             }

@@ -116,21 +116,40 @@ namespace Collector_local_db
 
             if (!fail)
             {
+
                 using (var db = new CollectorContext())
                 {
-                    var debt = new Entry
+                    if (is_object == true)
                     {
-                        Title = titleBox.Text,
-                        Who = nameBox.Text,
-                        Desc = descriptionBox.Text,
-                        Priority = prioritySwitch.IsOn ? 1 : 0,
-                        Amount = temp
+                        var debt = new Entry
+                        {
+                            Title = titleBox.Text,
+                            Who = nameBox.Text,
+                            Desc = descriptionBox.Text,
+                            Priority = prioritySwitch.IsOn ? 1 : 0,
+                            Object = new Object() { Category = db.Categories.First(o => o.Cname == (string) categoryBox.SelectedItem ), Image = " "},
+                            Date = initialPicker.Date.DateTime,
+                            Deadline = reminderPicker.Date.DateTime
+                        };
+                        db.Entries.Add(debt);
+                        db.SaveChanges();
+                    }
+                    else
+                    {
+                        var debt = new Entry
+                        {
+                            Title = titleBox.Text,
+                            Who = nameBox.Text,
+                            Desc = descriptionBox.Text,
+                            Priority = prioritySwitch.IsOn ? 1 : 0,
+                            Amount = temp,
+                            Date = initialPicker.Date.DateTime,
+                            Deadline = reminderPicker.Date.DateTime
+                        };
+                        db.Entries.Add(debt);
+                        db.SaveChanges();
+                    }
 
-
-
-                    };
-                    db.Entries.Add(debt);
-                    db.SaveChanges();
                 }
 
                
