@@ -10,6 +10,7 @@ using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
+using Windows.UI.Notifications;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -43,12 +44,26 @@ namespace Collector_local_db
 
         public Add_debt()
         {
+
             this.InitializeComponent();
+
+           
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            
+
+
+            using (var db = new CollectorContext())
+            {
+                
+                categoryBox.ItemsSource = db.Categories.ToList();
+               
+               
+
+            }
+
+
             //bool cgb = Frame.CanGoBack;
             if (is_borrowed && is_object)
                 welcomeBlock.Text = "You borrowed an Object.";
@@ -69,6 +84,7 @@ namespace Collector_local_db
             {
                 categoryBox.Visibility = Visibility.Collapsed;
                 photoButton.Visibility = Visibility.Collapsed;
+                objectnameBox.Visibility = Visibility.Collapsed;
             }
 
         }
@@ -85,14 +101,21 @@ namespace Collector_local_db
         }
 
 
-        private async void Add_debt_click(object sender, RoutedEventArgs e)
+        private  void Add_debt_click(object sender, RoutedEventArgs e)
         {
             bool fail = false;
-            float temp =0;
+            int object_quan = 0;
+            float money_amount =0;
             try
             {
-                temp = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
 
+                if (!is_object)
+                    money_amount = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
+                else
+                    object_quan = int.Parse(amountBox.Text);
+                    
+                    
+                    
             }
             catch
             {
@@ -100,15 +123,9 @@ namespace Collector_local_db
                 MessageDialog msgbox = new MessageDialog("Amount should be a number and not empty");
 
                 msgbox.Commands.Clear();
-                msgbox.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
+                msgbox.Commands.Add(new UICommand { Label = "Cancel"});
 
-                var res = await msgbox.ShowAsync();
-
-                if ((int)res.Id == 1)
-                {
-                   
-                    
-                }
+                
 
             }
 
@@ -119,6 +136,7 @@ namespace Collector_local_db
 
                 using (var db = new CollectorContext())
                 {
+<<<<<<< HEAD
                     if (is_object == true)
                     {
                         var debt = new Entry
@@ -149,11 +167,25 @@ namespace Collector_local_db
                         db.Entries.Add(debt);
                         db.SaveChanges();
                     }
+=======
+
+                    
+
+                    var debt = new Entry
+                    {
+                        Title = titleBox.Text,
+                        Who = nameBox.Text,
+                        Desc = descriptionBox.Text,
+                        Priority = prioritySwitch.IsOn ? 1 : 0,
+                        Amount = money_amount
+
+
+>>>>>>> c33ea3d633d9fdaf653b1dfb63a4cbe1c8116aea
 
                 }
 
                
-               Frame.Navigate(typeof(MainPage));
+                Frame.Navigate(typeof(MainPage));
             }
         }
 
