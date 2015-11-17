@@ -28,9 +28,9 @@
 
         <TextBox x:Name="descriptionBox" HorizontalAlignment="Left" Margin="577,213,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="Description"/>
 
-        <ToggleSwitch x:Name="prioritySwitch"  HorizontalAlignment="Left" Margin="785,417,0,0" VerticalAlignment="Top" Width="97"/>
+        <ToggleSwitch x:Name="prioritySwitch"  HorizontalAlignment="Left" Margin="785,529,0,0" VerticalAlignment="Top" Width="97"/>
 
-        <TextBlock x:Name="priorityBlock" HorizontalAlignment="Left" Margin="577,422,0,0" TextWrapping="Wrap" Text="Set high priority ? " VerticalAlignment="Top"/>
+        <TextBlock x:Name="priorityBlock" HorizontalAlignment="Left" Margin="577,534,0,0" TextWrapping="Wrap" Text="Set high priority ? " VerticalAlignment="Top"/>
 
         <Button x:Name="addButton" Click="Add_debt_click" Content="Add" HorizontalAlignment="Left" Margin="953,622,0,0" VerticalAlignment="Top" Height="56" Width="117"/>
 
@@ -43,9 +43,14 @@
 
         <ComboBox x:Name="currencyBox" HorizontalAlignment="Left" Margin="439,426,0,0" VerticalAlignment="Top" Width="47" Height="56"/>
         <TextBlock x:Name="welcomeBlock" HorizontalAlignment="Left" Margin="51,152,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" />
-        <Button x:Name="photoButton" Content="Add Photo ?" HorizontalAlignment="Left" Margin="577,506,0,0" VerticalAlignment="Top" Height="103" Width="151" Click="photoButton_Click" Background="#331CC4DE"/>
+        <Button x:Name="photoButton" Content="Add Photo ?" HorizontalAlignment="Left" Margin="987,211,0,0" VerticalAlignment="Top" Height="103" Width="151" Click="photoButton_Click" Background="#331CC4DE"/>
         <Image x:Name="image" HorizontalAlignment="Left" Height="103" Margin="773,506,0,0" VerticalAlignment="Top" Width="153"/>
-        <ComboBox x:Name="categoryBox" HorizontalAlignment="Left" Margin="577,315,0,0" VerticalAlignment="Top" Width="362" Height="53" PlaceholderText="To what Category ?"/>
+
+
+        <ComboBox x:Name="categoryBox"   HorizontalAlignment="Left" Margin="577,315,0,0" VerticalAlignment="Top" Width="362" Height="53"  PlaceholderText="To what Category ?" RequestedTheme="Light"/>
+
+        <TimePicker HorizontalAlignment="Left" Margin="538,622,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="objectnameBox"   HorizontalAlignment="Left" Margin="577,426,0,0" VerticalAlignment="Top" Width="362" Height="53"  PlaceholderText="Category name" RequestedTheme="Light"/>
 
     </Grid>
 </Page>
