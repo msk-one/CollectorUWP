@@ -105,7 +105,7 @@ namespace Collector_local_db
         {
             bool fail = false;
             int object_quan = 0;
-            float money_amount =0;
+            float money_amount = 0;
             try
             {
 
@@ -125,10 +125,7 @@ namespace Collector_local_db
                 msgbox.Commands.Clear();
                 msgbox.Commands.Add(new UICommand { Label = "Cancel"});
 
-                
-
             }
-
 
 
             if (!fail)
@@ -136,7 +133,6 @@ namespace Collector_local_db
 
                 using (var db = new CollectorContext())
                 {
-<<<<<<< HEAD
                     if (is_object == true)
                     {
                         var debt = new Entry
@@ -145,7 +141,7 @@ namespace Collector_local_db
                             Who = nameBox.Text,
                             Desc = descriptionBox.Text,
                             Priority = prioritySwitch.IsOn ? 1 : 0,
-                            Object = new Object() { Category = db.Categories.First(o => o.Cname == (string) categoryBox.SelectedItem ), Image = " "},
+                            Object = new Object() { Category = db.Categories.First(o => o.Cname == (string) categoryBox.SelectedItem ), Image = " ", Quantity = object_quan},
                             Date = initialPicker.Date.DateTime,
                             Deadline = reminderPicker.Date.DateTime
                         };
@@ -160,31 +156,14 @@ namespace Collector_local_db
                             Who = nameBox.Text,
                             Desc = descriptionBox.Text,
                             Priority = prioritySwitch.IsOn ? 1 : 0,
-                            Amount = temp,
+                            Amount = money_amount,
                             Date = initialPicker.Date.DateTime,
                             Deadline = reminderPicker.Date.DateTime
                         };
                         db.Entries.Add(debt);
                         db.SaveChanges();
                     }
-=======
-
-                    
-
-                    var debt = new Entry
-                    {
-                        Title = titleBox.Text,
-                        Who = nameBox.Text,
-                        Desc = descriptionBox.Text,
-                        Priority = prioritySwitch.IsOn ? 1 : 0,
-                        Amount = money_amount
-
-
->>>>>>> c33ea3d633d9fdaf653b1dfb63a4cbe1c8116aea
-
                 }
-
-               
                 Frame.Navigate(typeof(MainPage));
             }
         }
