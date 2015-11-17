@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -38,22 +39,30 @@ namespace Collector_local_db
 
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
+        private async void button_Click(object sender, RoutedEventArgs e)
         {
             using (var db = new CollectorContext())
             {
                 var debt = new Category
                 {
-
                     Cname = CategoryBox.Text
-
-
-
                 };
-                db.Categories.Add(debt);
-                db.SaveChanges();
 
-                Blogs.ItemsSource = db.Categories.ToList();
+                if (!db.Categories.Any(o => o.Cname == debt.Cname))
+                {
+                    db.Categories.Add(debt);
+                    db.SaveChanges();
+                    Blogs.ItemsSource = db.Categories.ToList();
+                }
+                else
+                {
+                    MessageDialog msgbox = new MessageDialog("This category already exists");
+
+                    msgbox.Commands.Clear();
+                    msgbox.Commands.Add(new UICommand { Label = "OK", Id = 1 });
+
+                    var res = await msgbox.ShowAsync();
+                }
             }
         }
     }
