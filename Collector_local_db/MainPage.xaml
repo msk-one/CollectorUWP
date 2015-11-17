@@ -14,22 +14,23 @@
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="121" VerticalAlignment="Top" Width="1920" Background="#FF154710">
             <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="COLLECTOR" FontSize="96" Margin="0,-20,0,29" Foreground="#FFC9ACAC"/>
         </Border>
+        <!--<Path Data="F1M181.003,-1898.78L207.077,-1902.33 207.089,-1877.18 181.027,-1877.03 181.003,-1898.78z M207.065,-1874.28L207.085,-1849.1 181.023,-1852.69 181.022,-1874.45 207.065,-1874.28z M210.226,-1902.79L244.798,-1907.84 244.798,-1877.5 210.226,-1877.22 210.226,-1902.79z M244.807,-1874.04L244.798,-1843.84 210.226,-1848.72 210.177,-1874.1 244.807,-1874.04z" Fill="#FFD7D8E8" HorizontalAlignment="Right" Height="23.75" Margin="0,0,49.75,53.25" Stretch="Fill" Stroke="Black" StrokeThickness="0" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="25"/>
+        </Button>-->
+
+        <ScrollBar x:Name="scrollBar" Margin="1863,112,10,10"  />
 
 
-        <ScrollBar x:Name="scrollBar"/>
-       
-       
-        <Pivot  Margin="0,112,0,0" >
-            <PivotItem  Header="Borrow">
-                
-                <ListView Name="Blogs" Margin="0,28,0,163">
+        <Pivot  Margin="0,112,142,0" >
+            <PivotItem  Header="Borrow" Margin="12,0,100,0">
+
+                <ListView Name="Blogs" Margin="0,28,885,43">
                     <ListView.ItemTemplate>
                         <DataTemplate>
 
-                            <TextBlock Text="{Binding Title}"  />
-                            
-                            
-                            
+                            <TextBlock Text="{Binding Title}" Width="139" MinWidth="160"  />
+
+
+
                         </DataTemplate>
 
                     </ListView.ItemTemplate>
@@ -43,16 +44,20 @@
 
 
 
-            <PivotItem Header="lend">
+            <PivotItem Header="Lend">
                 <Grid/>
-                    
+
             </PivotItem>
         </Pivot>
+        <Button Content="Add debt" x:Name="Circle"  Tag="/Add_debt.xaml" HorizontalAlignment="Right" Height="62" Margin="0,0,57,91" VerticalAlignment="Bottom" Width="172" Click="Button_Click" Style="{StaticResource MyButtonStyle}" BorderBrush="#FF067415" CharacterSpacing="1" FontSize="22" FontStretch="SemiExpanded" FontWeight="SemiBold" Foreground="#FFECE0E0">
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black" Offset="0"/>
+                    <GradientStop Color="#FF52D316" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+        </Button>
 
-
-
-        <Ellipse Fill="#FF5C5C78" Tag="/Add_debt.xaml" HorizontalAlignment="Right" Height="62" Margin="0,0,29,34" Stroke="Black" VerticalAlignment="Bottom" Width="65" PointerReleased="Button_Click"/>
-        <Path Data="M26,0 L31,0 L31,22 L53,22 L53,27 L31,27 L31,50 L26,50 L26,27 L0,27 L0,22 L26,22 z" Fill="#FFD7D8E8" HorizontalAlignment="Right" Height="23.75" Margin="0,0,49.75,53.25" Stretch="Fill" Stroke="Black" StrokeThickness="0" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="25"/>
 
 
 

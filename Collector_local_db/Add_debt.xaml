@@ -5,8 +5,8 @@
     xmlns:local="using:Collector_local_db"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" MinWidth="1920" MinHeight="1080">
-
+    mc:Ignorable="d" MinWidth="1920" MinHeight="1080"
+    Loaded="Page_Loaded">
 
     <Grid Margin="0,0,0,-18" Background="#FFCFB9B9">
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="121" VerticalAlignment="Top" Width="1920" Background="#FF154710">
@@ -33,7 +33,7 @@
 
         <Button x:Name="addButton" Click="Add_debt_click" Content="Add" HorizontalAlignment="Left" Margin="639,588,0,0" VerticalAlignment="Top" Height="56" Width="117"/>
 
-        <Button x:Name="cancelButton" Click="Cancel_click" Content="Cancel" HorizontalAlignment="Left" Margin="799,588,0,0" VerticalAlignment="Top" Height="56" Width="117"/>
+        <Button  x:Name="cancelButton"  Click="Cancel_click" Content="Cancel" HorizontalAlignment="Left" Margin="799,588,0,0" VerticalAlignment="Top" Height="56" Width="117"/>
 
         <TextBlock x:Name="remeinderBlock" HorizontalAlignment="Left" Margin="101,597,0,0" TextWrapping="Wrap" Text="Remeinder Date  " VerticalAlignment="Top"/>
 
@@ -41,6 +41,9 @@
         <DatePicker x:Name="reminderPicker" HorizontalAlignment="Left" Margin="141,622,0,0" VerticalAlignment="Top" Width="362"/>
         
         <ComboBox x:Name="currencyBox" HorizontalAlignment="Left" Margin="439,426,0,0" VerticalAlignment="Top" Width="47" Height="56"/>
+        <TextBlock x:Name="welcomeBlock" HorizontalAlignment="Left" Margin="51,152,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" />
+        <Button x:Name="photoButton" Content="Add Photo ?" HorizontalAlignment="Left" Margin="639,404,0,0" VerticalAlignment="Top" Height="103" Width="151" Click="photoButton_Click"/>
+        <Image x:Name="image" HorizontalAlignment="Left" Height="103" Margin="835,404,0,0" VerticalAlignment="Top" Width="153"/>
 
     </Grid>
 </Page>

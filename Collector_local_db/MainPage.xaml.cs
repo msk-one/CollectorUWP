@@ -21,8 +21,27 @@ namespace Collector_local_db
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
+    /// 
+
+    
+   public class Choice
+    {
+
+
+        // You can either pass the UID through the constructor or 
+        // expose a public setter to allow modification of the property
+       
+
+        public bool Borrowed {  get;  set; }
+        public bool Object {   get;  set; }
+        
+    }
+
+
     public sealed partial class MainPage : Page
     {
+
+        
         public MainPage()
         {
             this.InitializeComponent();
@@ -35,25 +54,14 @@ namespace Collector_local_db
                 Blogs.ItemsSource = db.Entries.ToList();
                 
             }
+           
+
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-
-            //    using (var db = new CollectorContext())
-            //    {
-            //        //var blog = new Blog { Url = NewBlogUrl.Text };
-            //        //db.Blogs.Add(blog);
-            //        //db.SaveChanges();
-
-            //        //Blogs.ItemsSource = db.Blogs.ToList();
-
-
-            //    }
-
-            //Add_debt mynewPage = new Add_debt(); //newPage is the name of the newPage.xaml file
-            //this.Content = mynewPage;
-
+            Choice choice = new Choice();
+            
             MessageDialog msgbox = new MessageDialog("What do you want to add ? ");
 
             msgbox.Commands.Clear();
@@ -73,14 +81,19 @@ namespace Collector_local_db
 
                 if ((int)res.Id == 0)
                 {
-                    Add_debt mynewPage = new Add_debt();
+                    choice.Object = true;
+                    choice.Borrowed = true;
+                    
+                    Add_debt mynewPage = new Add_debt(choice);
                     this.Content = mynewPage;
 
                 }
 
                 if ((int)res.Id == 1)
                 {
-                    Add_debt mynewPage = new Add_debt();
+                    choice.Object = false;
+                    choice.Borrowed = true;
+                    Add_debt mynewPage = new Add_debt(choice);
                     this.Content = mynewPage;
 
                 }
@@ -96,29 +109,25 @@ namespace Collector_local_db
 
                 if ((int)res.Id == 0)
                 {
-                    Add_debt mynewPage = new Add_debt();
+                    choice.Object = true;
+                    choice.Borrowed = false;
+                    Add_debt mynewPage = new Add_debt(choice);
                     this.Content = mynewPage;
 
                 }
 
                 if ((int)res.Id == 1)
                 {
-                    Add_debt mynewPage = new Add_debt();
+                    choice.Object = false;
+                    choice.Borrowed = false;
+
+                    Add_debt mynewPage = new Add_debt(choice);
 
                     this.Content = mynewPage;
 
                 }
 
-                using (var db = new CollectorContext())
-                {
-                    //var blog = new Blog { Url = NewBlogUrl.Text };
-                    //db.Blogs.Add(blog);
-                    //db.SaveChanges();
-
-                    //Blogs.ItemsSource = db.Blogs.ToList();
-
-                }
-
+              
                 if ((int)res.Id == 2)
                 {
                     MessageDialog msgbox2 = new MessageDialog("Nevermind then... :|", "User Response");
