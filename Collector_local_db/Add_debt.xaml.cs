@@ -29,12 +29,12 @@ namespace Collector_local_db
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     /// 
-
     public sealed partial class Add_debt : Page
     {
-
         private bool is_object = false;
-        private bool is_borrowed = false; 
+        private bool is_borrowed = false;
+        private string base64 = String.Empty;
+
         public Add_debt(Choice choice)
         {
             this.InitializeComponent();
@@ -44,23 +44,14 @@ namespace Collector_local_db
 
         public Add_debt()
         {
-
             this.InitializeComponent();
-
-           
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-
-
             using (var db = new CollectorContext())
             {
-                
                 categoryBox.ItemsSource = db.Categories.ToList();
-               
-               
-
             }
 
 
@@ -74,11 +65,10 @@ namespace Collector_local_db
             else if (!is_borrowed && !is_object)
                 welcomeBlock.Text = "You lend some Money.";
 
-            if(is_object)
+            if (is_object)
             {
                 currencyBox.Visibility = Visibility.Collapsed;
                 amountBox.Width = 362;
-
             }
             else
             {
@@ -86,10 +76,9 @@ namespace Collector_local_db
                 photoButton.Visibility = Visibility.Collapsed;
                 objectnameBox.Visibility = Visibility.Collapsed;
             }
-
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             if (e.Parameter is Choice)
             {
@@ -97,11 +86,66 @@ namespace Collector_local_db
                 is_object = chc.Object;
                 is_borrowed = chc.Borrowed;
             }
+            else if (e.Parameter is Entry)
+            {
+                Entry ent = (Entry) e.Parameter;
+
+                if (ent.Type.TypeId == 1 && ent.Object != null)
+                        welcomeBlock.Text = "You borrowed an Object.";
+                else if (ent.Type.TypeId == 1 && ent.Object == null)
+                        welcomeBlock.Text = "You borrowed some Money.";
+                else if (ent.Type.TypeId == 2 && ent.Object != null)
+                        welcomeBlock.Text = "You lend an Object.";
+                else if (ent.Type.TypeId == 2 && ent.Object == null)
+                        welcomeBlock.Text = "You lend some Money.";
+
+                if (ent.Object != null)
+                {
+                    currencyBox.Visibility = Visibility.Collapsed;
+                    amountBox.Width = 362;
+                }
+                else
+                {
+                    categoryBox.Visibility = Visibility.Collapsed;
+                    photoButton.Visibility = Visibility.Collapsed;
+                    objectnameBox.Visibility = Visibility.Collapsed;
+                }
+
+                titleBox.Text = ent.Title;
+                nameBox.Text = ent.Who;
+                if (ent.Object != null)
+                {
+                    amountBox.Text = ent.Object.Quantity.ToString();
+                    categoryBox.SelectedItem = ent.Object.Category;
+                    objectnameBox.Text = ent.Object.Name;
+                    image.Source = await Base64Converter.FromBase64(ent.Object.Image);
+                }
+                else
+                {
+                    amountBox.Text = ent.Amount.ToString(CultureInfo.InvariantCulture.NumberFormat);
+                }
+                initialPicker.Date = new DateTimeOffset(ent.Date);
+                reminderPicker.Date = new DateTimeOffset(ent.Deadline);
+                //hourpicker
+                descriptionBox.Text = ent.Desc;
+                if (ent.Priority == 0)
+                {
+                    prioritySwitch.IsOn = false;
+                }
+                else
+                {
+                    prioritySwitch.IsOn = true;
+                }
+                addButton.Content = "Edit";
+                photoButton.Content = "Change photo ?";
+                textBlock.Text = "COLLECTOR -    edit entry";
+
+            }
             base.OnNavigatedTo(e);
         }
 
 
-        private  void Add_debt_click(object sender, RoutedEventArgs e)
+        private void Add_debt_click(object sender, RoutedEventArgs e)
         {
             bool fail = false;
             int object_quan = 0;
@@ -109,16 +153,13 @@ namespace Collector_local_db
             Category cat = null;
             try
             {
-
                 if (!is_object)
                     money_amount = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
                 else
                 {
                     object_quan = int.Parse(amountBox.Text);
                     cat = (Category) categoryBox.SelectedItem;
-                    BitmapImage bmi = (BitmapImage) image.Source;
                 }
-
             }
             catch
             {
@@ -126,29 +167,36 @@ namespace Collector_local_db
                 MessageDialog msgbox = new MessageDialog("Amount should be a number and not empty");
 
                 msgbox.Commands.Clear();
-                msgbox.Commands.Add(new UICommand { Label = "Cancel"});
-
+                msgbox.Commands.Add(new UICommand {Label = "Cancel"});
             }
 
 
             if (!fail)
             {
-
                 using (var db = new CollectorContext())
                 {
                     if (is_object == true)
                     {
+                        var obj = new Object()
+                        {
+                            Category = db.Categories.First(o => o.Cname == cat.Cname),
+                            Name = objectnameBox.Text,
+                            Image = base64,
+                            Quantity = object_quan
+                        };
                         var debt = new Entry
                         {
                             Title = titleBox.Text,
                             Who = nameBox.Text,
                             Desc = descriptionBox.Text,
                             Priority = prioritySwitch.IsOn ? 1 : 0,
-                            Object = new Object() { Category = db.Categories.First(o => o.Cname == cat.Cname ), Image = " ", Quantity = object_quan},
+                            Object = obj,
                             Date = initialPicker.Date.DateTime,
                             Deadline = reminderPicker.Date.DateTime
                         };
+                        db.Objects.Add(obj);
                         db.Entries.Add(debt);
+
                         db.SaveChanges();
                     }
                     else
@@ -167,14 +215,14 @@ namespace Collector_local_db
                         db.SaveChanges();
                     }
                 }
-                Frame.Navigate(typeof(MainPage));
+                Frame.Navigate(typeof (MainPage));
             }
         }
 
 
         private void Cancel_click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(MainPage));
+            Frame.Navigate(typeof (MainPage));
             //this.Content = new MainPage();
         }
 
@@ -186,34 +234,33 @@ namespace Collector_local_db
             picker.FileTypeFilter.Add(".jpg");
             picker.FileTypeFilter.Add(".jpeg");
             picker.FileTypeFilter.Add(".png");
-            try {
-                 file = await picker.PickSingleFileAsync();
+            try
+            {
+                file = await picker.PickSingleFileAsync();
                 BitmapImage img = new BitmapImage();
                 img = await LoadImage(file);
-
+                base64 = await Base64Converter.ToBase64(file);
                 image.Source = img;
             }
-            catch { }
-            
+            catch (Exception ex)
+            {
+                MessageDialog msgbox = new MessageDialog(ex.Message + "\n\n\n Stack Trace:\n" + ex.StackTrace);
 
+                msgbox.Commands.Clear();
+                msgbox.Commands.Add(new UICommand {Label = "OK"});
+                var res = await msgbox.ShowAsync();
+            }
         }
-
 
 
         private static async Task<BitmapImage> LoadImage(StorageFile file)
         {
             BitmapImage bitmapImage = new BitmapImage();
-            FileRandomAccessStream stream = (FileRandomAccessStream)await file.OpenAsync(FileAccessMode.Read);
+            FileRandomAccessStream stream = (FileRandomAccessStream) await file.OpenAsync(FileAccessMode.Read);
 
             bitmapImage.SetSource(stream);
 
             return bitmapImage;
-
         }
-
-
     }
-
-
-
 }
