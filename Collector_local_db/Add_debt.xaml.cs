@@ -101,7 +101,7 @@ namespace Collector_local_db
         }
 
 
-        private  void Add_debt_click(object sender, RoutedEventArgs e)
+        private async void Add_debt_click(object sender, RoutedEventArgs e)
         {
             bool fail = false;
             int object_quan = 0;
@@ -123,9 +123,16 @@ namespace Collector_local_db
                 MessageDialog msgbox = new MessageDialog("Amount should be a number and not empty");
 
                 msgbox.Commands.Clear();
-                msgbox.Commands.Add(new UICommand { Label = "Cancel"});
+                msgbox.Commands.Add(new UICommand { Label = "Cancel", Id = 0 });
 
-            }
+                var res = await msgbox.ShowAsync();
+               
+                if ((int)res.Id == 0)
+                {
+                  
+                }
+
+           }
 
 
             if (!fail)
@@ -133,15 +140,19 @@ namespace Collector_local_db
 
                 using (var db = new CollectorContext())
                 {
-                    if (is_object == true)
+                    if (is_object)
                     {
+
+
                         var debt = new Entry
                         {
                             Title = titleBox.Text,
                             Who = nameBox.Text,
                             Desc = descriptionBox.Text,
                             Priority = prioritySwitch.IsOn ? 1 : 0,
-                            Object = new Object() { Category = db.Categories.First(o => o.Cname == (string) categoryBox.SelectedItem ), Image = " ", Quantity = object_quan},
+
+                          
+
                             Date = initialPicker.Date.DateTime,
                             Deadline = reminderPicker.Date.DateTime
                         };
@@ -164,6 +175,12 @@ namespace Collector_local_db
                         db.SaveChanges();
                     }
                 }
+              
+               
+                var remeinder_task = new Notifify(reminderPicker.Date.DateTime, hourPicker.Time);
+
+                remeinder_task.set_Notification();
+
                 Frame.Navigate(typeof(MainPage));
             }
         }
@@ -186,7 +203,7 @@ namespace Collector_local_db
                  file = await picker.PickSingleFileAsync();
                 BitmapImage img = new BitmapImage();
                 img = await LoadImage(file);
-
+               
                 image.Source = img;
             }
             catch { }
@@ -208,6 +225,56 @@ namespace Collector_local_db
         }
 
 
+    }
+
+
+
+    public class Notifify
+    {
+        private Random random = new Random((int)DateTime.Now.Ticks);
+        private DateTime when_remind;
+        TimeSpan hours;
+        const string TOAST = @"
+<toast>
+  <visual>
+    <binding template=""ToastGeneric"">
+      <text>Collector</text>
+      <text>You set a reminder</text>
+       <image placement = ""AppLogoOverride"" src=""Assets/Square44x44Logo.targetsize-24_altform-unplated.png"" />
+      
+    </binding>
+  </visual>
+  <actions>
+    <action content = ""check"" arguments=""check""  />
+    <action content = ""cancel"" arguments=""cancel""/>
+  </actions>
+  <audio src =""ms-winsoundevent:Notification.Reminder""/>
+</toast>";
+
+
+        public Notifify(DateTime when,TimeSpan hours)
+        {
+            this.when_remind = when;
+            this.hours = hours;
+        }
+
+        public void set_Notification()
+        {
+            
+            var when = when_remind.Date.AddMinutes(hours.TotalMinutes);
+
+            var offset = new DateTimeOffset(when);
+
+            Windows.Data.Xml.Dom.XmlDocument xml = new Windows.Data.Xml.Dom.XmlDocument();
+
+            xml.LoadXml(TOAST);
+
+            ScheduledToastNotification toast = new ScheduledToastNotification(xml, offset);
+
+            toast.Id = random.Next(1, 100000000).ToString();
+
+            ToastNotificationManager.CreateToastNotifier().AddToSchedule(toast);
+        }
     }
 
 
