@@ -106,16 +106,19 @@ namespace Collector_local_db
             bool fail = false;
             int object_quan = 0;
             float money_amount = 0;
+            Category cat = null;
             try
             {
 
                 if (!is_object)
                     money_amount = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
                 else
+                {
                     object_quan = int.Parse(amountBox.Text);
-                    
-                    
-                    
+                    cat = (Category) categoryBox.SelectedItem;
+                    BitmapImage bmi = (BitmapImage) image.Source;
+                }
+
             }
             catch
             {
@@ -141,7 +144,7 @@ namespace Collector_local_db
                             Who = nameBox.Text,
                             Desc = descriptionBox.Text,
                             Priority = prioritySwitch.IsOn ? 1 : 0,
-                            Object = new Object() { Category = db.Categories.First(o => o.Cname == (string) categoryBox.SelectedItem ), Image = " ", Quantity = object_quan},
+                            Object = new Object() { Category = db.Categories.First(o => o.Cname == cat.Cname ), Image = " ", Quantity = object_quan},
                             Date = initialPicker.Date.DateTime,
                             Deadline = reminderPicker.Date.DateTime
                         };
@@ -167,6 +170,7 @@ namespace Collector_local_db
                 Frame.Navigate(typeof(MainPage));
             }
         }
+
 
         private void Cancel_click(object sender, RoutedEventArgs e)
         {
