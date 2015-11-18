@@ -49,8 +49,14 @@
 
         <ComboBox x:Name="categoryBox" ItemsSource="{Binding Path=Categories}" DisplayMemberPath="Cname" SelectedValuePath="Cname" SelectedValue="{Binding Path=Category}" HorizontalAlignment="Left" Margin="577,315,0,0" VerticalAlignment="Top" Width="362" Height="53"  PlaceholderText="To what Category ?" RequestedTheme="Light"/>
 
-        <TimePicker HorizontalAlignment="Left" Margin="538,622,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="objectnameBox"   HorizontalAlignment="Left" Margin="577,426,0,0" VerticalAlignment="Top" Width="362" Height="53"  PlaceholderText="Category name" RequestedTheme="Light"/>
+        <TimePicker x:Name ="hourPicker" ClockIdentifier="24HourClock" HorizontalAlignment="Left" Margin="538,622,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="objectnameBox"   HorizontalAlignment="Left" Margin="577,426,0,0" VerticalAlignment="Top" Width="362" Height="53"  PlaceholderText="Object name" RequestedTheme="Light"/>
+        <ScrollBar x:Name="scrollBar" HorizontalAlignment="Right" Margin="0,55,0,0" VerticalAlignment="Center" Height="665" Width="21"/>
+        <ScrollBar x:Name="scrollBar_Copy" HorizontalAlignment="Center" Margin="628.5,0,627.5,-632.5" VerticalAlignment="Bottom" Orientation="Horizontal"  Height="1277">
+            <ScrollBar.RenderTransform>
+                <CompositeTransform Rotation="90" ScaleX="-1"/>
+            </ScrollBar.RenderTransform>
+        </ScrollBar>
 
     </Grid>
 </Page>

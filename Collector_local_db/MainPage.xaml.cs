@@ -26,15 +26,8 @@ namespace Collector_local_db
     
    public class Choice
     {
-
-
-        // You can either pass the UID through the constructor or 
-        // expose a public setter to allow modification of the property
-       
-
         public bool Borrowed {  get;  set; }
-        public bool Object {   get;  set; }
-        
+        public bool Object {   get;  set; }  
     }
 
 
@@ -49,14 +42,69 @@ namespace Collector_local_db
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            List<Button> buttons = new List<Button>();
+          
             using (var db = new CollectorContext())
             {
-                Blogs.ItemsSource = db.Entries.ToList();
+                Borrow_list.ItemsSource = db.Entries.Where(o => o.Type.TypeId == 1);
+                Lend_list.ItemsSource = db.Entries.Where(o => o.Type.TypeId == 2);
                 
+
+                for (int i = 0; i < db.Categories.Count(); i++)
+                {
+                    RowDefinition gridRow1 = new RowDefinition();
+                    gridRow1.Height = new GridLength(35);
+
+                    grid_borrow.RowDefinitions.Add(gridRow1);
+
+
+                    Button newButton = new Button();
+                    newButton.Width = 1014;
+                    newButton.Height = 30;
+              
+                    //newButton.Padding = new Thickness(10, 30 * i + 5, 10,10 );
+                    newButton.Content = db.Categories.ToList().ElementAt(i).Cname;
+
+                    newButton.Click += fill_categories;
+                    buttons.Add(newButton);
+                    Grid.SetRow(newButton, i);
+                    grid_borrow.Children.Add(newButton);
+
+
+
+                }
+
+
             }
-           
+
 
         }
+
+        private void fill_categories(object sender, RoutedEventArgs e)
+        {
+
+            Button button;
+
+           button = sender as Button;
+           
+
+            using (var db = new CollectorContext())
+            {
+                Borrow_list_object.ItemsSource = db.Entries.Where(o => o.Object.Category.Cname == (string)button.Content).ToList();
+                
+            }
+
+            if (Borrow_list_object.Visibility == Visibility.Visible)
+                Borrow_list_object.Visibility = Visibility.Collapsed;
+            else
+                Borrow_list_object.Visibility = Visibility.Visible;
+        }
+
+
+
+        
+
+        
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -146,5 +194,55 @@ namespace Collector_local_db
         {
             this.Frame.Navigate(typeof(Settings));
         }
+
+      
+
+        private void moneyBorrowButton_Click(object sender, RoutedEventArgs e)
+        {
+            using (var db = new CollectorContext())
+            {
+                Borrow_list.ItemsSource = db.Entries.Where(o => o.Object == null).ToList();
+            }
+            
+
+            if (Borrow_list.Visibility == Visibility.Visible)
+                Borrow_list.Visibility = Visibility.Collapsed;
+            else
+            {
+                Borrow_list.Visibility = Visibility.Visible;
+               
+            }
+
+        }
+
+        private void moneyLendButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Lend_list.Visibility == Visibility.Visible)
+                Lend_list.Visibility = Visibility.Collapsed;
+            else
+            {
+                Lend_list.Visibility = Visibility.Visible;
+                
+            }
+        }
+
+        private void objectLendButton_Click(object sender, RoutedEventArgs e)
+        {
+           
+
+        }
+
+        private void objectBorrowButton_Click(object sender, RoutedEventArgs e)
+        {
+            grid_borrow.Visibility = Visibility.Visible;
+
+            using (var db = new CollectorContext())
+            {
+                Borrow_list.ItemsSource = db.Entries.Where(o => o.Object != null).ToList();
+            }
+
+        }
     }
-}
+    }
+
+

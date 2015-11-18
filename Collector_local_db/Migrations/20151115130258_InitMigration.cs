@@ -20,6 +20,7 @@ namespace Collector_local_db.Migrations
                 {
                     table.PrimaryKey("PK_Category", x => x.CategoryId);
                 });
+            
             migrationBuilder.CreateTable(
                 name: "Currency",
                 columns: table => new
@@ -46,6 +47,8 @@ namespace Collector_local_db.Migrations
                 {
                     table.PrimaryKey("PK_Type", x => x.TypeId);
                 });
+            migrationBuilder.Sql("INSERT INTO Type VALUES (1, 'Borrowed');");
+            migrationBuilder.Sql("INSERT INTO Type VALUES (2, 'Lend');");
             migrationBuilder.CreateTable(
                 name: "Object",
                 columns: table => new
