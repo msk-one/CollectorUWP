@@ -151,7 +151,7 @@ namespace Collector_local_db
             int object_quan = 0;
             float money_amount = 0;
             Category cat = null;
-            int type = -1;
+            int what_type = -1;
             try
             {
                 if (!is_object)
@@ -187,15 +187,23 @@ namespace Collector_local_db
 
 
                     if (is_borrowed)
-                        type = 1;
+                        what_type = 1;
                     else
-                        type = 2;
-
+                        what_type = 2;
+                    
 
                     if (is_object)
                     {
+
+                        var type = new Type()
+                        {
+                            TypeId = what_type
+                            
+                        };
+
                         var obj = new Object()
                         {
+                            
                             Category = db.Categories.First(o => o.Cname == cat.Cname),
                             Name = objectnameBox.Text,
                             Image = base64,
@@ -203,6 +211,7 @@ namespace Collector_local_db
                         };
                         var debt = new Entry
                         {
+                            Type = type,
                             Title = titleBox.Text,
                             Who = nameBox.Text,
                             Desc = descriptionBox.Text,
@@ -211,6 +220,7 @@ namespace Collector_local_db
                             Date = initialPicker.Date.DateTime,
                             Deadline = reminderPicker.Date.DateTime
                         };
+
                         db.Objects.Add(obj);
                         db.Entries.Add(debt);
 
@@ -218,8 +228,16 @@ namespace Collector_local_db
                     }
                     else
                     {
+
+                        var type = new Type()
+                        {
+                            TypeId = what_type
+
+                        };
+
                         var debt = new Entry
                         {
+                            Type = type,
                             Title = titleBox.Text,
                             Who = nameBox.Text,
                             Desc = descriptionBox.Text,
@@ -234,9 +252,9 @@ namespace Collector_local_db
                 }
               
                
-                var remeinder_task = new Notifify(reminderPicker.Date.DateTime, hourPicker.Time);
+               // var remeinder_task = new Notifify(reminderPicker.Date.DateTime, hourPicker.Time);
 
-                remeinder_task.set_Notification();
+                //remeinder_task.set_Notification();
 
                 Frame.Navigate(typeof(MainPage));
             }
