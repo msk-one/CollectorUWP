@@ -54,6 +54,7 @@ namespace Collector_local_db
             using (var db = new CollectorContext())
             {
                 categoryBox.ItemsSource = db.Categories.ToList();
+                currencyBox.ItemsSource = db.Currencies.ToList();
             }
 
 
@@ -130,6 +131,7 @@ namespace Collector_local_db
                 else
                 {
                     amountBox.Text = ent.Amount.ToString(CultureInfo.InvariantCulture.NumberFormat);
+                    currencyBox.SelectedItem = ent.Currency;
                 }
                 initialPicker.Date = new DateTimeOffset(ent.Date);
                 reminderPicker.Date = new DateTimeOffset(ent.Deadline);
@@ -159,15 +161,20 @@ namespace Collector_local_db
                 int object_quan = 0;
                 float money_amount = 0;
                 Category cat = null;
+                Currency cur = null;
                 int type = -1;
                 try
                 {
                     if (!is_object)
+                    {
                         money_amount = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
+                        cur = (Currency)currencyBox.SelectedItem;
+                    }
                     else
                     {
                         object_quan = int.Parse(amountBox.Text);
-                        cat = (Category) categoryBox.SelectedItem;
+                        cat = (Category)categoryBox.SelectedItem;
+
                     }
                 }
                 catch
@@ -233,6 +240,7 @@ namespace Collector_local_db
                                 Desc = descriptionBox.Text,
                                 Priority = prioritySwitch.IsOn ? 1 : 0,
                                 Amount = money_amount,
+                                Currency = db.Currencies.First(o => o.Cursn == cur.Cursn),
                                 Date = initialPicker.Date.DateTime,
                                 Deadline = reminderPicker.Date.DateTime
                             };
@@ -275,7 +283,7 @@ namespace Collector_local_db
                     else
                     {
                         ent.Amount = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
-
+                        ent.Currency = (Currency) currencyBox.SelectedItem;
                         db.Update(ent);
                         db.SaveChanges();
                     }

@@ -41,7 +41,7 @@
 
         <DatePicker x:Name="reminderPicker" HorizontalAlignment="Left" Margin="141,622,0,0" VerticalAlignment="Top" Width="362"/>
 
-        <ComboBox x:Name="currencyBox" HorizontalAlignment="Left" Margin="439,426,0,0" VerticalAlignment="Top" Width="47" Height="56"/>
+        <ComboBox x:Name="currencyBox" ItemsSource="{Binding Path=Currencies}" DisplayMemberPath="Cursn" SelectedValuePath="Cursn" SelectedValue="{Binding Path=Currency}" HorizontalAlignment="Left" Margin="439,426,0,0" VerticalAlignment="Top" Width="47" Height="56"/>
         <TextBlock x:Name="welcomeBlock" HorizontalAlignment="Left" Margin="51,152,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" />
         <Button x:Name="photoButton" Content="Add Photo ?" HorizontalAlignment="Left" Margin="987,211,0,0" VerticalAlignment="Top" Height="103" Width="151" Click="photoButton_Click" Background="#331CC4DE"/>
         <Image x:Name="image" HorizontalAlignment="Left" Height="103" Margin="987,376,0,0" VerticalAlignment="Top" Width="153"/>
