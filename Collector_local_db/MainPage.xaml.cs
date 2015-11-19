@@ -91,7 +91,7 @@ namespace Collector_local_db
             using (var db = new CollectorContext())
             {
                 Borrow_list_object.ItemsSource = db.Entries.Where(o => o.Object.Category.Cname == (string)button.Content).ToList();
-                
+                int a = 2;
             }
 
             if (Borrow_list_object.Visibility == Visibility.Visible)

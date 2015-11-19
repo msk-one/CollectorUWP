@@ -35,6 +35,8 @@ namespace Collector_local_db
         private bool is_borrowed = false;
         private string base64 = String.Empty;
 
+        private Entry ent = null;
+
         public Add_debt(Choice choice)
         {
             this.InitializeComponent();
@@ -56,26 +58,6 @@ namespace Collector_local_db
 
 
             //bool cgb = Frame.CanGoBack;
-            if (is_borrowed && is_object)
-                welcomeBlock.Text = "You borrowed an Object.";
-            else if (is_borrowed && !is_object)
-                welcomeBlock.Text = "You borrowed some Money.";
-            else if (!is_borrowed && is_object)
-                welcomeBlock.Text = "You lend an Object.";
-            else if (!is_borrowed && !is_object)
-                welcomeBlock.Text = "You lend some Money.";
-
-            if (is_object)
-            {
-                currencyBox.Visibility = Visibility.Collapsed;
-                amountBox.Width = 362;
-            }
-            else
-            {
-                categoryBox.Visibility = Visibility.Collapsed;
-                photoButton.Visibility = Visibility.Collapsed;
-                objectnameBox.Visibility = Visibility.Collapsed;
-            }
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -85,10 +67,35 @@ namespace Collector_local_db
                 Choice chc = (Choice) e.Parameter;
                 is_object = chc.Object;
                 is_borrowed = chc.Borrowed;
+
+                if (is_borrowed && is_object)
+                    welcomeBlock.Text = "You borrowed an Object.";
+                else if (is_borrowed && !is_object)
+                    welcomeBlock.Text = "You borrowed some Money.";
+                else if (!is_borrowed && is_object)
+                    welcomeBlock.Text = "You lend an Object.";
+                else if (!is_borrowed && !is_object)
+                    welcomeBlock.Text = "You lend some Money.";
+
+                if (is_object)
+                {
+                    currencyBox.Visibility = Visibility.Collapsed;
+                    amountBox.Width = 362;
+                }
+                else
+                {
+                    categoryBox.Visibility = Visibility.Collapsed;
+                    photoButton.Visibility = Visibility.Collapsed;
+                    objectnameBox.Visibility = Visibility.Collapsed;
+                }
+
+                addButton.Content = "Add";
+                photoButton.Content = "Add photo ?";
+                textBlock.Text = "COLLECTOR -    add entry";
             }
             else if (e.Parameter is Entry)
             {
-                Entry ent = (Entry) e.Parameter;
+                ent = (Entry) e.Parameter;
 
                 if (ent.Type.TypeId == 1 && ent.Object != null)
                         welcomeBlock.Text = "You borrowed an Object.";
@@ -144,101 +151,141 @@ namespace Collector_local_db
             base.OnNavigatedTo(e);
         }
 
-
         private async void Add_debt_click(object sender, RoutedEventArgs e)
         {
-            bool fail = false;
-            int object_quan = 0;
-            float money_amount = 0;
-            Category cat = null;
-            int type = -1;
-            try
+            if ((string) addButton.Content == "Add")
             {
-                if (!is_object)
-                    money_amount = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
-                else
+                bool fail = false;
+                int object_quan = 0;
+                float money_amount = 0;
+                Category cat = null;
+                int type = -1;
+                try
                 {
-                    object_quan = int.Parse(amountBox.Text);
-                    cat = (Category) categoryBox.SelectedItem;
+                    if (!is_object)
+                        money_amount = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
+                    else
+                    {
+                        object_quan = int.Parse(amountBox.Text);
+                        cat = (Category) categoryBox.SelectedItem;
+                    }
                 }
+                catch
+                {
+                    fail = true;
+                    MessageDialog msgbox = new MessageDialog("Amount should be a number and not empty");
+
+                    msgbox.Commands.Clear();
+                    msgbox.Commands.Add(new UICommand {Label = "Cancel", Id = 0});
+
+                    var res = await msgbox.ShowAsync();
+
+                    if ((int) res.Id == 0)
+                    {
+
+                    }
+
+                }
+
+
+                if (!fail)
+                {
+                    using (var db = new CollectorContext())
+                    {
+
+
+                        if (is_borrowed)
+                            type = 1;
+                        else
+                            type = 2;
+
+
+                        if (is_object)
+                        {
+                            var obj = new Object()
+                            {
+                                Category = db.Categories.First(o => o.Cname == cat.Cname),
+                                Name = objectnameBox.Text,
+                                Image = base64,
+                                Quantity = object_quan
+                            };
+                            var debt = new Entry
+                            {
+                                Title = titleBox.Text,
+                                Who = nameBox.Text,
+                                Desc = descriptionBox.Text,
+                                Priority = prioritySwitch.IsOn ? 1 : 0,
+                                Object = obj,
+                                Date = initialPicker.Date.DateTime,
+                                Deadline = reminderPicker.Date.DateTime
+                            };
+                            db.Objects.Add(obj);
+                            db.Entries.Add(debt);
+
+                            db.SaveChanges();
+                        }
+                        else
+                        {
+                            var debt = new Entry
+                            {
+                                Title = titleBox.Text,
+                                Who = nameBox.Text,
+                                Desc = descriptionBox.Text,
+                                Priority = prioritySwitch.IsOn ? 1 : 0,
+                                Amount = money_amount,
+                                Date = initialPicker.Date.DateTime,
+                                Deadline = reminderPicker.Date.DateTime
+                            };
+                            db.Entries.Add(debt);
+                            db.SaveChanges();
+                        }
+                    }
+
+
+                    var remeinder_task = new Notifify(reminderPicker.Date.DateTime, hourPicker.Time);
+
+                    remeinder_task.set_Notification();
+
+                    Frame.Navigate(typeof (MainPage));
+                }
+
             }
-            catch
-            {
-                fail = true;
-                MessageDialog msgbox = new MessageDialog("Amount should be a number and not empty");
-
-                msgbox.Commands.Clear();
-                msgbox.Commands.Add(new UICommand { Label = "Cancel", Id = 0 });
-
-                var res = await msgbox.ShowAsync();
-               
-                if ((int)res.Id == 0)
-                {
-                  
-                }
-
-           }
-
-
-            if (!fail)
+            else
             {
                 using (var db = new CollectorContext())
                 {
+                    ent.Title = titleBox.Text;
+                    ent.Desc = descriptionBox.Text;
+                    ent.Who = nameBox.Text;
+                    ent.Date = initialPicker.Date.DateTime;
+                    ent.Deadline = reminderPicker.Date.DateTime;
+                    ent.Priority = prioritySwitch.IsOn ? 1 : 0;
 
+                    if (ent.Object != null)
+                    {                    
+                        ent.Object.Category = (Category) categoryBox.SelectedItem;
+                        ent.Object.Name = objectnameBox.Text;
+                        ent.Object.Quantity = int.Parse(amountBox.Text);
+                        ent.Object.Image = base64;
 
-                    if (is_borrowed)
-                        type = 1;
-                    else
-                        type = 2;
-
-
-                    if (is_object)
-                    {
-                        var obj = new Object()
-                        {
-                            Category = db.Categories.First(o => o.Cname == cat.Cname),
-                            Name = objectnameBox.Text,
-                            Image = base64,
-                            Quantity = object_quan
-                        };
-                        var debt = new Entry
-                        {
-                            Title = titleBox.Text,
-                            Who = nameBox.Text,
-                            Desc = descriptionBox.Text,
-                            Priority = prioritySwitch.IsOn ? 1 : 0,
-                            Object = obj,
-                            Date = initialPicker.Date.DateTime,
-                            Deadline = reminderPicker.Date.DateTime
-                        };
-                        db.Objects.Add(obj);
-                        db.Entries.Add(debt);
-
+                        db.Update(ent);
+                        db.Update(ent.Object);
                         db.SaveChanges();
                     }
                     else
                     {
-                        var debt = new Entry
-                        {
-                            Title = titleBox.Text,
-                            Who = nameBox.Text,
-                            Desc = descriptionBox.Text,
-                            Priority = prioritySwitch.IsOn ? 1 : 0,
-                            Amount = money_amount,
-                            Date = initialPicker.Date.DateTime,
-                            Deadline = reminderPicker.Date.DateTime
-                        };
-                        db.Entries.Add(debt);
+                        ent.Amount = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
+
+                        db.Update(ent);
                         db.SaveChanges();
                     }
+
+                    var remeinder_task = new Notifify(reminderPicker.Date.DateTime, hourPicker.Time);
+
+                    remeinder_task.set_Notification();
+
+                    Frame.Navigate(typeof(MainPage));
                 }
-              
-               
-                var remeinder_task = new Notifify(reminderPicker.Date.DateTime, hourPicker.Time);
-
-                remeinder_task.set_Notification();
-
-                Frame.Navigate(typeof(MainPage));
             }
         }
 
