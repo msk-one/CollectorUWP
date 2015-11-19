@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.Data.Entity.Migrations;
 
@@ -35,6 +35,14 @@ namespace Collector_local_db.Migrations
                 {
                     table.PrimaryKey("PK_Currency", x => x.CurrencyId);
                 });
+            migrationBuilder.Sql("INSERT INTO Currency VALUES (1, 'Polish Zloty', 'zł', 'PLN');");
+            migrationBuilder.Sql("INSERT INTO Currency VALUES (2, 'US Dollar', '$', 'USD');");
+            migrationBuilder.Sql("INSERT INTO Currency VALUES (3, 'British Pound', '£', 'GBP');");
+            migrationBuilder.Sql("INSERT INTO Currency VALUES (4, 'Euro', '€', 'EUR');");
+            migrationBuilder.Sql("INSERT INTO Currency VALUES (5, 'Canadian Dollar', '$', 'CAD');");
+            migrationBuilder.Sql("INSERT INTO Currency VALUES (6, 'Australlian Dollar', '$', 'AUD');");
+            migrationBuilder.Sql("INSERT INTO Currency VALUES (7, 'Japanese Yen', '¥', 'JNY');");
+            migrationBuilder.Sql("INSERT INTO Currency VALUES (8, 'Beer', 'Br', 'BRO');");
             migrationBuilder.CreateTable(
                 name: "Type",
                 columns: table => new
