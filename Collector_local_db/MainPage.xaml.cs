@@ -310,31 +310,24 @@ namespace Collector_local_db
         private void button_Click_1(object sender, RoutedEventArgs e)
         {
 
-            
+
             PivotItem temp = (PivotItem)general_pivot.SelectedItem;
             String temp2 = (string)temp.Header;
             if (temp2 == "Borrow")
             {
                 using (var db = new CollectorContext())
                 {
+                    
+                    int id = ((Collector_local_db.Entry)Borrow_list.SelectedItem).EntryId;
+                    
+                    var selected_info = db.Entries.Where(o => o.EntryId == id);
+                    
 
 
-
-                    var type = new Type
+                    var entry = new Entry
                     {
-                        TypeId = 1
-                    };
+                        //Type =,
 
-                    var obj = new Object
-                    {
-                        ObjectId = ((Collector_local_db.Object)Borrow_list.SelectedItem).ObjectId,
-
-                    };
-
-                    var entry_edit = new Entry
-                    {
-                        Type = type,
-                        
                         Title = ((Collector_local_db.Entry)Borrow_list.SelectedItem).Title,
                         Who = ((Collector_local_db.Entry)Borrow_list.SelectedItem).Who,
                         Desc = ((Collector_local_db.Entry)Borrow_list.SelectedItem).Desc,
@@ -342,38 +335,67 @@ namespace Collector_local_db
                         Amount = ((Collector_local_db.Entry)Borrow_list.SelectedItem).Amount,
                         Date = ((Collector_local_db.Entry)Borrow_list.SelectedItem).Date,
                         Deadline = ((Collector_local_db.Entry)Borrow_list.SelectedItem).Deadline
-                        
+
+
                     };
-                    this.Frame.Navigate(typeof(Add_debt), entry_edit);
+
+                      this.Frame.Navigate(typeof(Add_debt), entry);
+
+                    //        var type = new Type
+                    //        {
+                    //            TypeId = 1
+                    //        };
+
+                    //        var obj = new Object
+                    //        {
+                    //            ObjectId = ((Collector_local_db.Object)Borrow_list.SelectedItem).ObjectId,
+
+                    //        };
+
+                    //        var entry_edit = new Entry
+                    //        {
+                    //            Type = type,
+
+                    //            Title = ((Collector_local_db.Entry)Borrow_list.SelectedItem).Title,
+                    //            Who = ((Collector_local_db.Entry)Borrow_list.SelectedItem).Who,
+                    //            Desc = ((Collector_local_db.Entry)Borrow_list.SelectedItem).Desc,
+                    //            Priority = ((Collector_local_db.Entry)Borrow_list.SelectedItem).Priority,
+                    //            Amount = ((Collector_local_db.Entry)Borrow_list.SelectedItem).Amount,
+                    //            Date = ((Collector_local_db.Entry)Borrow_list.SelectedItem).Date,
+                    //            Deadline = ((Collector_local_db.Entry)Borrow_list.SelectedItem).Deadline
+
+                    //        };
+                    //        this.Frame.Navigate(typeof(Add_debt), entry_edit);
+                    //    }
+
+                    //}
+                    //else
+                    //{
+                    //    var type = new Type
+                    //    {
+                    //        TypeId = 2
+                    //    };
+
+                    //    var entry_edit = new Entry
+                    //    {
+                    //        Type = type,
+                    //        Title = ((Collector_local_db.Entry)Lend_list.SelectedItem).Title,
+                    //        Who = ((Collector_local_db.Entry)Lend_list.SelectedItem).Who,
+                    //        Desc = ((Collector_local_db.Entry)Lend_list.SelectedItem).Desc,
+                    //        Priority = ((Collector_local_db.Entry)Lend_list.SelectedItem).Priority,
+                    //        Amount = ((Collector_local_db.Entry)Lend_list.SelectedItem).Amount,
+                    //        Date = ((Collector_local_db.Entry)Lend_list.SelectedItem).Date,
+                    //        Deadline = ((Collector_local_db.Entry)Lend_list.SelectedItem).Deadline
+                    //    };
+
+                    //    this.Frame.Navigate(typeof(Add_debt), entry_edit);
+                    //}
+
                 }
 
-            }
-            else
-            {
-                var type = new Type
-                {
-                    TypeId = 2
-                };
-
-                var entry_edit = new Entry
-                {
-                    Type = type,
-                    Title = ((Collector_local_db.Entry)Lend_list.SelectedItem).Title,
-                    Who = ((Collector_local_db.Entry)Lend_list.SelectedItem).Who,
-                    Desc = ((Collector_local_db.Entry)Lend_list.SelectedItem).Desc,
-                    Priority = ((Collector_local_db.Entry)Lend_list.SelectedItem).Priority,
-                    Amount = ((Collector_local_db.Entry)Lend_list.SelectedItem).Amount,
-                    Date = ((Collector_local_db.Entry)Lend_list.SelectedItem).Date,
-                    Deadline = ((Collector_local_db.Entry)Lend_list.SelectedItem).Deadline
-                };
-
-                this.Frame.Navigate(typeof(Add_debt), entry_edit);
-            }
-                
-            
-
 
             }
+        }
 
         private void Lend_list_GotFocus(object sender, RoutedEventArgs e)
         {

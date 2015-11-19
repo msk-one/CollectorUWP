@@ -47,7 +47,9 @@
                                     <TextBlock x:Name="amountbox" Grid.Column="2" Grid.Row="0" Text="{Binding Amount}" />
                                     <TextBlock x:Name="descbox" Grid.Column="0" Grid.Row="1" Text="{Binding Desc}" />
                                     <TextBlock x:Name="whobox" Grid.Column="1" Grid.Row="1" Text="{Binding Who}" />
+                                    <TextBlock x:Name="entryid" Grid.Column="1" Grid.Row="1" Text="{Binding EntryId}" Visibility="Collapsed" />
                                     <TextBlock x:Name="priority" Grid.Column="2" Grid.Row="1" Text="P: " TextAlignment="Center" />
+                                    
                                 </Grid>
 
 
