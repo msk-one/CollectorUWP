@@ -293,7 +293,8 @@ namespace Collector_local_db
             if (grid_categories.Visibility == Visibility.Visible)
             {
                 grid_categories.Visibility = Visibility.Collapsed;
-                
+                Lend_list.Visibility = Visibility.Collapsed;
+                Borrow_list.Visibility = Visibility.Collapsed;
 
             }
             else
