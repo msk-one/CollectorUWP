@@ -15,8 +15,7 @@
 
             <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="COLLECTOR" FontSize="30" Margin="0,0,0,0" Foreground="#FFC9ACAC"/>
         </Border>
-        <!--<Path Data="F1M181.003,-1898.78L207.077,-1902.33 207.089,-1877.18 181.027,-1877.03 181.003,-1898.78z M207.065,-1874.28L207.085,-1849.1 181.023,-1852.69 181.022,-1874.45 207.065,-1874.28z M210.226,-1902.79L244.798,-1907.84 244.798,-1877.5 210.226,-1877.22 210.226,-1902.79z M244.807,-1874.04L244.798,-1843.84 210.226,-1848.72 210.177,-1874.1 244.807,-1874.04z" Fill="#FFD7D8E8" HorizontalAlignment="Right" Height="23.75" Margin="0,0,49.75,53.25" Stretch="Fill" Stroke="Black" StrokeThickness="0" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="25"/>
-        </Button>-->
+       
 
         <ScrollBar x:Name="scrollBar" Margin="1863,112,10,10"  />
 
@@ -49,7 +48,7 @@
                                     <TextBlock x:Name="whobox" Grid.Column="1" Grid.Row="1" Text="{Binding Who}" />
                                     <TextBlock x:Name="entryid" Grid.Column="1" Grid.Row="1" Text="{Binding EntryId}" Visibility="Collapsed" />
                                     <TextBlock x:Name="priority" Grid.Column="2" Grid.Row="1" Text="P: " TextAlignment="Center" />
-                                    
+
                                 </Grid>
 
 
@@ -96,7 +95,7 @@
                                     <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding Desc}" />
                                     <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Who}" />
                                    
-                                    <TextBlock x:Name="priority" Grid.Column="2" Grid.Row="1" Text="P: " TextAlignment="Center" />
+                                    <TextBlock x:Name="priority" Grid.Column="2" Grid.Row="1" Text="{Binding Priority}" TextAlignment="Center" />
                                 </Grid>
 
 
@@ -114,7 +113,7 @@
 
 
 
-        <Button Content="Add debt" x:Name="add_debt"  Tag="/Add_debt.xaml" HorizontalAlignment="Right" Height="62" Margin="0,0,57,91" VerticalAlignment="Bottom" Width="172" Click="Button_Click" Style="{StaticResource MyButtonStyle}" BorderBrush="#FF067415" CharacterSpacing="1" FontSize="22" FontStretch="SemiExpanded" FontWeight="SemiBold" Foreground="#FFECE0E0">
+        <Button Content="Add debt" x:Name="add_debt"  Tag="/AddDebt.xaml" HorizontalAlignment="Right" Height="62" Margin="0,0,57,91" VerticalAlignment="Bottom" Width="172" Click="AddButton" Style="{StaticResource MyButtonStyle}" BorderBrush="#FF067415" CharacterSpacing="1" FontSize="22" FontStretch="SemiExpanded" FontWeight="SemiBold" Foreground="#FFECE0E0">
             <Button.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black" Offset="0"/>
@@ -122,20 +121,25 @@
                 </LinearGradientBrush>
             </Button.Background>
         </Button>
-        <Image Source="Assets/settings.png" x:Name="image" Width="50" Height="50" Margin="0" RenderTransformOrigin="0.492,0.475" RequestedTheme="Light"   Canvas.ZIndex="3" HorizontalAlignment="Right" VerticalAlignment="Top" PointerReleased="image_PointerReleased">
+        
+        
+        <Image Source="Assets/settings.png" x:Name="settings_image" Width="50" Height="50" Margin="0" RenderTransformOrigin="0.492,0.475" RequestedTheme="Dark"   Canvas.ZIndex="3" HorizontalAlignment="Right" VerticalAlignment="Top" PointerReleased="SettingsClick">
             <Image.Projection>
                 <PlaneProjection RotationX="-0.782" RotationY="-19.997" RotationZ="-2.078"/>
             </Image.Projection>
         </Image>
 
+        <Image Source="Assets/trash.png" x:Name="trash_image" Width="50" Height="50" Margin="0,0,50,0" RenderTransformOrigin="0.400,0.475" RequestedTheme="Light"   Canvas.ZIndex="3" HorizontalAlignment="Right" VerticalAlignment="Top" PointerReleased="TrachClick" >
+            
+        </Image>
 
 
         <Button x:Name="moneyBorrowButton"  Height="30" Width="100" Content="Money" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,170,0,0" Click="moneyButton_Click" Canvas.ZIndex="3"/>
         <Button x:Name="objectBorrowButton" Height="30" Width="100" Content="Object" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="110,170,0,0" Click="objectButton_Click"  Canvas.ZIndex="3"/>
-        <Button x:Name="Category_choosen" Visibility="Collapsed" Height="30" Width="100" Content="Object" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="220,170,0,0"  Click="show_cat_click"    Canvas.ZIndex="3"/>
+        <Button x:Name="Category_choosen" Visibility="Collapsed" Height="30" Width="100" Content="Object" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="220,170,0,0"  Click="ShowElementsInCategory"    Canvas.ZIndex="3"/>
         <Grid x:Name="grid_categories"  Margin="0,255,531,91" Visibility="Collapsed" Height="auto" Width="auto"></Grid>
-        <Button x:Name="edit_button" Visibility="Collapsed" Content="Edit" HorizontalAlignment="Left" Margin="1149,506,0,0" VerticalAlignment="Top" Click="button_Click_1"/>
-
+        <Button x:Name="edit_button" Visibility="Collapsed" Content="Edit" HorizontalAlignment="Left" Margin="1149,506,0,0" VerticalAlignment="Top" Click="EditButton"/>
+        <Button x:Name="remove_button" Visibility="Collapsed" Content="Remove" HorizontalAlignment="Left" Margin="1149,452,0,0" VerticalAlignment="Top" Click="remove_debt"/>
 
     </Grid>
 </Page>

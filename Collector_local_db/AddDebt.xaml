@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="Collector_local_db.Add_debt"
+    x:Class="Collector_local_db.AddDebt"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Collector_local_db"
@@ -13,11 +13,11 @@
 
             <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="COLLECTOR   - new debt" FontSize="30" Margin="0,0,0,0" Foreground="#FFC9ACAC"/>
         </Border>
-        <TextBox x:Name="titleBox" HorizontalAlignment="Left" Margin="141,213,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="Title"/>
+        <TextBox x:Name="titleBox" HorizontalAlignment="Left" Margin="141,213,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="Title" TextChanged="title_TextChanged"/>
 
-        <TextBox x:Name="nameBox" HorizontalAlignment="Left" Margin="141,315,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="Name and surname"/>
+        <TextBox x:Name="nameBox" HorizontalAlignment="Left" Margin="141,315,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="Name and surname" TextChanged="namebox_TextChanged"/>
 
-        <TextBox x:Name="amountBox" HorizontalAlignment="Left" Margin="141,426,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="282" PlaceholderText="Amount" InputScope="Digits" />
+        <TextBox x:Name="amountBox" HorizontalAlignment="Left" Margin="141,426,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="282" PlaceholderText="Amount" InputScope="Digits" TextChanged="amountBox_TextChanged" />
 
 
         <DatePicker x:Name="initialPicker" HorizontalAlignment="Left"  Margin="141,537,0,0" VerticalAlignment="Top" Width="362"/>

@@ -92,7 +92,8 @@ namespace Collector_local_db.Migrations
                     Priority = table.Column<int>(nullable: false),
                     Title = table.Column<string>(nullable: true),
                     TypeTypeId = table.Column<int>(nullable: true),
-                    Who = table.Column<string>(nullable: true)
+                    Who = table.Column<string>(nullable: true),
+                    Is_active = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {

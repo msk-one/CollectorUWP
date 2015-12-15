@@ -52,7 +52,7 @@ namespace Collector_local_db
         public float Amount { get; set; }
         public int Priority { get; set; }
         public DateTime Deadline { get; set; }
-
+        public bool Is_active { get; set; }
         public Currency Currency { get; set; }
     }
 

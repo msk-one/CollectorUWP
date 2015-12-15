@@ -1,0 +1,54 @@
+﻿<Page
+    x:Class="Collector_local_db.Trash"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Collector_local_db"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Loaded="Page_Loaded">
+    
+    
+    <Grid Background="#FFCFB9B9">
+
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="1920" Background="#FF154710">
+
+            <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="COLLECTOR" FontSize="30" Margin="0,0,0,0" Foreground="#FFC9ACAC"/>
+        </Border>
+
+        <ListView Name="Trach_list" Margin="50" Visibility="Visible" GotFocus="Trach_list_GotFocus">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+
+                    <Grid Width="1014">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*" />
+                            <RowDefinition Height="1*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock x:Name="titlebox" Grid.Column="0" Grid.Row="0" Text="{Binding Title}" FontSize="15" FontStyle="Oblique" />
+                        <TextBlock x:Name="deadlinebox" Grid.Column="1" Grid.Row="0" Text="{Binding Deadline}" />
+                        <TextBlock x:Name="amountbox" Grid.Column="2" Grid.Row="0" Text="{Binding Amount}" />
+                        <TextBlock x:Name="descbox" Grid.Column="0" Grid.Row="1" Text="{Binding Desc}" />
+                        <TextBlock x:Name="whobox" Grid.Column="1" Grid.Row="1" Text="{Binding Who}" />
+                        <TextBlock x:Name="entryid" Grid.Column="1" Grid.Row="1" Text="{Binding EntryId}" Visibility="Collapsed" />
+                        <TextBlock x:Name="priority" Grid.Column="2" Grid.Row="1" Text="P: " TextAlignment="Center" />
+
+                    </Grid>
+
+
+                </DataTemplate>
+
+            </ListView.ItemTemplate>
+            <TextBlock x:Name="textBlock1" Height="100" TextWrapping="Wrap" Text="TextBlock" Width="100"/>
+        </ListView>
+
+
+        <Button x:Name="removeButton" Content="Remove" HorizontalAlignment="Right" Margin="0,0,0,60" VerticalAlignment="Center" Click="remove_button" Height="56" Width="226"/>
+        <Button x:Name="reviveButton" Content="Revive" HorizontalAlignment="Right" Margin="0,60,0,0" VerticalAlignment="Center" Click="revive_button" Height="56" Width="226"/>
+    </Grid>
+</Page>

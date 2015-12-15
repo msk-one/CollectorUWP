@@ -64,6 +64,8 @@ namespace Collector_local_db.Migrations
 
                     b.Property<string>("Who");
 
+                    b.Property<bool>("Is_active");
+
                     b.HasKey("EntryId");
                 });
 
