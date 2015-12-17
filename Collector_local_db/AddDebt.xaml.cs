@@ -94,6 +94,8 @@ namespace Collector_local_db
             {
                 _ent = (Entry)e.Parameter;
 
+                _isObject = (_ent.Object != null)? true:false;
+
                 if (_ent.Type.TypeId == 1 && _ent.Object != null)
                     welcomeBlock.Text = "You borrowed an Object.";
                 else if (_ent.Type.TypeId == 1 && _ent.Object == null)
@@ -129,7 +131,7 @@ namespace Collector_local_db
                 {
                     amountBox.Text = _ent.Amount.ToString(CultureInfo.InvariantCulture.NumberFormat);
 
-                    currencyBox.PlaceholderText = _ent.Currency.Cursi;
+                    currencyBox.PlaceholderText = _ent.Currency.Cursn;
                 }
                 initialPicker.Date = new DateTimeOffset(_ent.Date);
                 reminderPicker.Date = new DateTimeOffset(_ent.Deadline);
@@ -148,14 +150,11 @@ namespace Collector_local_db
 
 
 
-        private async void Add_debt_click(object sender, RoutedEventArgs e)
+        private  void Add_debt_click(object sender, RoutedEventArgs e)
         {
-            if ((string)addButton.Content == "Add")
-            {
+           
 
-
-
-                var fail = false;
+              
                 var objectQuan = 0;
                 float moneyAmount = 0;
                 Category cat = null;
@@ -163,36 +162,54 @@ namespace Collector_local_db
                 int type;
                 try
                 {
+                 
+                    
+
+                    if(titleBox.Text =="" || nameBox.Text =="" )
+                        throw new Exception("Title and name are NOT optional fields");
+
                     if (!_isObject)
                     {
                         moneyAmount = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
-                        cur = (Currency)currencyBox.SelectedItem;
                     }
                     else
                     {
                         objectQuan = int.Parse(amountBox.Text);
-                        cat = (Category)categoryBox.SelectedItem;
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
-                    fail = true;
-                    var msgbox = new MessageDialog("Amount should be a number and not empty");
+                    ErrorDialog(ex.Message);
+                    return;
+                }
 
-                    msgbox.Commands.Clear();
-                    msgbox.Commands.Add(new UICommand { Label = "Cancel", Id = 0 });
+            if ((string)addButton.Content == "Add")
+            {
 
-                    var res = await msgbox.ShowAsync();
+                try
+                {
 
-                    if ((int)res.Id == 0)
+                    if (!_isObject)
                     {
 
+                        if (currencyBox.SelectedItem != null)
+                            cur = (Currency) currencyBox.SelectedItem;
+                        else throw new Exception("You forget to choose Currency");
+
                     }
+                    else
+                    {
 
+                        if (categoryBox.SelectedItem != null) cat = (Category) categoryBox.SelectedItem;
+                        else throw new Exception("You forget to choose Category ");
+
+                    }
                 }
-
-
-                if (fail) return;
+                catch (Exception ex)
+                {
+                    ErrorDialog(ex.Message);
+                    return;
+                }
 
                 using (var db = new CollectorContext())
                 {
@@ -202,6 +219,7 @@ namespace Collector_local_db
 
                     if (_isObject)
                     {
+
 
 
                         var obj = new Object
@@ -230,6 +248,9 @@ namespace Collector_local_db
                     }
                     else
                     {
+
+
+
 
                         var debt = new Entry
                         {
@@ -262,6 +283,27 @@ namespace Collector_local_db
             {
                 using (var db = new CollectorContext())
                 {
+
+
+
+                    if (!_isObject)
+                    {
+
+                        if (currencyBox.SelectedItem == null)
+                            cur = db.Currencies.First((o => o.Cursn == currencyBox.PlaceholderText));
+                        else
+                        cur = (Currency)currencyBox.SelectedItem;
+
+
+                    }
+                    else
+                    {
+
+                        if (categoryBox.SelectedItem == null)
+                            cat = db.Categories.First((o => o.Cname == categoryBox.PlaceholderText));
+                        else cat = (Category)categoryBox.SelectedItem;
+                    }
+
                     _ent.Title = titleBox.Text;
                     _ent.Desc = descriptionBox.Text;
                     _ent.Who = nameBox.Text;
@@ -271,7 +313,7 @@ namespace Collector_local_db
 
                     if (_ent.Object != null)
                     {
-                        _ent.Object.Category = (Category)categoryBox.SelectedItem;
+                        _ent.Object.Category = cat;
                         _ent.Object.Name = objectnameBox.Text;
                         _ent.Object.Quantity = int.Parse(amountBox.Text);
                         _ent.Object.Image = _base64;
@@ -283,7 +325,7 @@ namespace Collector_local_db
                     else
                     {
                         _ent.Amount = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
-                        _ent.Currency = (Currency)currencyBox.SelectedItem;
+                        _ent.Currency = cur;
                         db.Update(_ent);
                         db.SaveChanges();
                     }
@@ -296,6 +338,27 @@ namespace Collector_local_db
                 }
             }
         }
+
+        private static void ErrorDialog(string message)
+        {
+
+            var problem = message == "Input string was not in a correct format." ? "There is something wrong with numbers" : message;
+
+            var msgbox = new MessageDialog(problem);
+
+            msgbox.Commands.Clear();
+            msgbox.Commands.Add(new UICommand { Label = "Cancel", Id = 0 });
+
+            var res =  msgbox.ShowAsync();
+
+            if ((int)res.Id == 0)
+            {
+              
+            }
+            return;
+
+        }
+        
 
 
         private void Cancel_click(object sender, RoutedEventArgs e)
@@ -328,7 +391,7 @@ namespace Collector_local_db
         }
 
 
-        private static async Task<BitmapImage> LoadImage(StorageFile file)
+        private static async Task<BitmapImage> LoadImage(IStorageFile file)
         {
             var bitmapImage = new BitmapImage();
             var stream = (FileRandomAccessStream)await file.OpenAsync(FileAccessMode.Read);
