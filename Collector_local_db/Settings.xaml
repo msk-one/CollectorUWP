@@ -14,13 +14,13 @@
         </Border>
 
 
-        <TextBox x:Name="CategoryBox" HorizontalAlignment="Left" Margin="141,315,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="Enter category for objects"/>
+        <TextBox x:Name="CategoryBox" HorizontalAlignment="Left" Margin="141,315,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="Enter category for objects" TextChanged="CategoryBox_OnTextChanged"/>
 
         <ListView Name="Blogs" Margin="141,403,636,43">
             <ListView.ItemTemplate>
                 <DataTemplate>
 
-                    <TextBlock Text="{Binding Cname}" Width="139" MinWidth="160"  />
+                    <TextBlock Text="{Binding cname}" Width="139" MinWidth="160"  />
 
 
 
@@ -31,7 +31,7 @@
             <ScrollBar x:Name="scrollBar" Height="100" Width="100"/>
         </ListView>
         <ScrollBar x:Name="scrollBar1" HorizontalAlignment="Left" Margin="222,333,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="CategoryButton" Content="Add" HorizontalAlignment="Left" Margin="508,315,0,0" VerticalAlignment="Top" Click="button_Click" Height="56" Width="226"/>
+        <Button x:Name="CategoryButton" IsEnabled ="False" Content="Add" HorizontalAlignment="Left" Margin="508,315,0,0" VerticalAlignment="Top" Click="button_Click" Height="56" Width="226"/>
 
     </Grid>
 </Page>

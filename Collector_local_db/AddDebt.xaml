@@ -13,17 +13,17 @@
 
             <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="COLLECTOR   - new debt" FontSize="30" Margin="0,0,0,0" Foreground="#FFC9ACAC"/>
         </Border>
-        <TextBox x:Name="titleBox" HorizontalAlignment="Left" Margin="141,213,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="Title" TextChanged="title_TextChanged"/>
+        <TextBox x:Name="titleBox" HorizontalAlignment="Left" Margin="141,213,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="title" TextChanged="title_TextChanged"/>
 
         <TextBox x:Name="nameBox" HorizontalAlignment="Left" Margin="141,315,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="Name and surname" TextChanged="namebox_TextChanged"/>
 
-        <TextBox x:Name="amountBox" HorizontalAlignment="Left" Margin="141,426,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="282" PlaceholderText="Amount" InputScope="Digits" TextChanged="amountBox_TextChanged" />
+        <TextBox x:Name="amountBox" HorizontalAlignment="Left" Margin="141,426,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="282" PlaceholderText="amount" InputScope="Digits" TextChanged="amountBox_TextChanged" />
 
 
         <DatePicker x:Name="initialPicker" HorizontalAlignment="Left"  Margin="141,537,0,0" VerticalAlignment="Top" Width="362"/>
 
 
-        <TextBlock x:Name="initialBlock" HorizontalAlignment="Left" Margin="101,512,0,0" TextWrapping="Wrap" Text="Date of  " VerticalAlignment="Top"/>
+        <TextBlock x:Name="initialBlock" HorizontalAlignment="Left" Margin="101,512,0,0" TextWrapping="Wrap" Text="date of  " VerticalAlignment="Top"/>
 
 
         <TextBox x:Name="descriptionBox" HorizontalAlignment="Left" Margin="577,213,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="Description"/>
@@ -36,7 +36,7 @@
 
         <Button  x:Name="cancelButton"  Click="Cancel_click" Content="Cancel" HorizontalAlignment="Left" Margin="1113,622,0,0" VerticalAlignment="Top" Height="56" Width="117"/>
 
-        <TextBlock x:Name="remeinderBlock" HorizontalAlignment="Left" Margin="101,597,0,0" TextWrapping="Wrap" Text="Remeinder Date  " VerticalAlignment="Top"/>
+        <TextBlock x:Name="remeinderBlock" HorizontalAlignment="Left" Margin="101,597,0,0" TextWrapping="Wrap" Text="Remeinder date  " VerticalAlignment="Top"/>
 
 
         <DatePicker x:Name="reminderPicker" HorizontalAlignment="Left" Margin="141,622,0,0" VerticalAlignment="Top" Width="362"/>
@@ -47,7 +47,7 @@
         <Image x:Name="image" HorizontalAlignment="Left" Height="103" Margin="987,376,0,0" VerticalAlignment="Top" Width="153"/>
 
 
-        <ComboBox x:Name="categoryBox" ItemsSource="{Binding Path=Categories}" DisplayMemberPath="Cname" SelectedValuePath="Cname" SelectedValue="{Binding Path=Category}" HorizontalAlignment="Left" Margin="577,315,0,0" VerticalAlignment="Top" Width="362" Height="53"  PlaceholderText="To what Category ?" RequestedTheme="Light"/>
+        <ComboBox x:Name="categoryBox" ItemsSource="{Binding Path=Categories}" DisplayMemberPath="cname" SelectedValuePath="cname" SelectedValue="{Binding Path=Category}" HorizontalAlignment="Left" Margin="577,315,0,0" VerticalAlignment="Top" Width="362" Height="53"  PlaceholderText="To what Category ?" RequestedTheme="Light"/>
 
         <TimePicker x:Name ="hourPicker" ClockIdentifier="24HourClock" HorizontalAlignment="Left" Margin="538,622,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="objectnameBox"   HorizontalAlignment="Left" Margin="577,426,0,0" VerticalAlignment="Top" Width="362" Height="53"  PlaceholderText="Object name" RequestedTheme="Light"/>

@@ -33,10 +33,7 @@ namespace Collector_local_db
 
             this.InitializeComponent();
             this.Suspending += OnSuspending;
-            using (var db = new CollectorContext())
-            {
-                db.Database.Migrate();
-            }
+          
 
         }
 

@@ -13,7 +13,7 @@
 
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="1920" Background="#FF154710">
 
-            <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="COLLECTOR" FontSize="30" Margin="0,0,0,0" Foreground="#FFC9ACAC"/>
+            <TextBlock x:Name="TitleBlock" TextWrapping="Wrap" Text="COLLECTOR" FontSize="30" Margin="0,0,0,0" Foreground="#FFC9ACAC"/>
         </Border>
        
 
@@ -124,23 +124,29 @@
         </Button>
         
         
-        <Image Source="Assets/settings.png" x:Name="settings_image" Width="50" Height="50" Margin="0" RenderTransformOrigin="0.492,0.475" RequestedTheme="Dark"   Canvas.ZIndex="3" HorizontalAlignment="Right" VerticalAlignment="Top" PointerReleased="SettingsClick">
+        <Image Source="Assets/settings.png" x:Name="settings_image" Width="50" Height="50" Margin="0" RenderTransformOrigin="0.492,0.475" RequestedTheme="light"   Canvas.ZIndex="3" HorizontalAlignment="Right" VerticalAlignment="Top" PointerReleased="SettingsClick">
             <Image.Projection>
                 <PlaneProjection RotationX="-0.782" RotationY="-19.997" RotationZ="-2.078"/>
             </Image.Projection>
         </Image>
 
         <Image Source="Assets/trash.png" x:Name="trash_image" Width="50" Height="50" Margin="0,0,50,0" RenderTransformOrigin="0.400,0.475" RequestedTheme="Light"   Canvas.ZIndex="3" HorizontalAlignment="Right" VerticalAlignment="Top" PointerReleased="TrachClick" >
-            
+
         </Image>
+
+        <Image Source="Assets/charts.png" x:Name="charts_image" Width="50" Height="50" Margin="0,0,100,0" RenderTransformOrigin="0.300,0.475" RequestedTheme="Light"   Canvas.ZIndex="3" HorizontalAlignment="Right" VerticalAlignment="Top" PointerReleased="TrachClick" >
+
+        </Image>
+
 
 
         <Button x:Name="moneyBorrowButton"  Height="30" Width="100" Content="Money" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,170,0,0" Click="moneyButton_Click" Canvas.ZIndex="3"/>
         <Button x:Name="objectBorrowButton" Height="30" Width="100" Content="Object" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="110,170,0,0" Click="objectButton_Click"  Canvas.ZIndex="3"/>
         <Button x:Name="Category_choosen" Visibility="Collapsed" Height="30" Width="100" Content="Object" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="220,170,0,0"  Click="ShowElementsInCategory"    Canvas.ZIndex="3"/>
         <Grid x:Name="grid_categories"  Margin="0,255,531,91" Visibility="Collapsed" Height="auto" Width="auto"></Grid>
-        <Button x:Name="edit_button" Visibility="Collapsed" Content="Edit" HorizontalAlignment="Left" Margin="1149,506,0,0" VerticalAlignment="Top" Click="EditButton"/>
-        <Button x:Name="remove_button" Visibility="Collapsed" Content="Remove" HorizontalAlignment="Left" Margin="1149,452,0,0" VerticalAlignment="Top" Click="remove_debt"/>
+        <Button x:Name="send_button" Visibility="Visible" Content="Send" HorizontalAlignment="Left" Margin="1149,400,0,0" VerticalAlignment="Top" Click="send_debt"/>
+        <Button x:Name="edit_button" Visibility="Visible" Content="Edit" HorizontalAlignment="Left" Margin="1149,506,0,0" VerticalAlignment="Top" Click="EditButton"/>
+        <Button x:Name="remove_button" Visibility="Visible" Content="Remove" HorizontalAlignment="Left" Margin="1149,452,0,0" VerticalAlignment="Top" Click="remove_debt"/>
 
     </Grid>
 </Page>

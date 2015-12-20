@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,11 +27,16 @@ namespace Collector_local_db
     /// 
     public sealed partial class AddDebt
     {
+        class Categories_list
+        {
+            private List<ProjectClasses.Category> categoryList;
+        }
+
         private bool _isObject;
         private bool _isBorrowed;
         private string _base64 = string.Empty;
 
-        private Entry _ent;
+        private ProjectClasses.Entry _ent;
 
         public AddDebt(Choice choice)
         {
@@ -41,19 +48,23 @@ namespace Collector_local_db
         public AddDebt()
         {
             InitializeComponent();
+
+
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            using (var db = new CollectorContext())
-            {
-                categoryBox.ItemsSource = db.Categories.ToList();
-                currencyBox.ItemsSource = db.Currencies.ToList();
-                reminderPicker.Date =  reminderPicker.Date.DateTime.AddDays(1);
-            }
+            categoryBox.ItemsSource = ((List<ProjectClasses.Category>)await
+                SerwerFunction.Getfromserver<List<ProjectClasses.Category>>(
+                    "Categories/", "GET", null)).ToList();
 
 
-            
+            // currencyBox.ItemsSource = db.Currencies.ToList();
+            reminderPicker.Date = reminderPicker.Date.DateTime.AddDays(1);
+
+
+
+
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -90,19 +101,19 @@ namespace Collector_local_db
                 photoButton.Content = "Add photo ?";
                 textBlock.Text = "COLLECTOR -    add entry";
             }
-            else if (e.Parameter is Entry)
+            else if (e.Parameter is ProjectClasses.Entry)
             {
-                _ent = (Entry)e.Parameter;
+                _ent = (ProjectClasses.Entry)e.Parameter;
 
                 _isObject = (_ent.Object != null)? true:false;
 
-                if (_ent.Type.TypeId == 1 && _ent.Object != null)
+                if (_ent.Type.tid == 1 && _ent.Object != null)
                     welcomeBlock.Text = "You borrowed an Object.";
-                else if (_ent.Type.TypeId == 1 && _ent.Object == null)
+                else if (_ent.Type.tid == 1 && _ent.Object == null)
                     welcomeBlock.Text = "You borrowed some Money.";
-                else if (_ent.Type.TypeId == 2 && _ent.Object != null)
+                else if (_ent.Type.tid == 2 && _ent.Object != null)
                     welcomeBlock.Text = "You lend an Object.";
-                else if (_ent.Type.TypeId == 2 && _ent.Object == null)
+                else if (_ent.Type.tid == 2 && _ent.Object == null)
                     welcomeBlock.Text = "You lend some Money.";
 
                 if (_ent.Object != null)
@@ -117,28 +128,28 @@ namespace Collector_local_db
                     objectnameBox.Visibility = Visibility.Collapsed;
                 }
 
-                titleBox.Text = _ent.Title;
-                nameBox.Text = _ent.Who;
+                titleBox.Text = _ent.title;
+                nameBox.Text = _ent.who;
                 if (_ent.Object != null)
                 {
 
                     amountBox.Text = _ent.Object.Quantity.ToString();
-                    categoryBox.PlaceholderText = _ent.Object.Category.Cname;
+                    categoryBox.PlaceholderText = _ent.Object.Category.cname;
                     objectnameBox.Text = _ent.Object.Name;
                     // image.Source = await Base64Converter.FromBase64(_ent.Object.Image);
                 }
                 else
                 {
-                    amountBox.Text = _ent.Amount.ToString(CultureInfo.InvariantCulture.NumberFormat);
+                    amountBox.Text = _ent.amount.ToString(CultureInfo.InvariantCulture.NumberFormat);
 
-                    currencyBox.PlaceholderText = _ent.Currency.Cursn;
+                   // currencyBox.PlaceholderText = _ent.Currency.Cursn;
                 }
-                initialPicker.Date = new DateTimeOffset(_ent.Date);
-                reminderPicker.Date = new DateTimeOffset(_ent.Deadline);
+                initialPicker.Date = new DateTimeOffset(_ent.date);
+                reminderPicker.Date = new DateTimeOffset(_ent.deadline);
 
-                descriptionBox.Text = _ent.Desc;
+                descriptionBox.Text = _ent.descr;
 
-                prioritySwitch.IsOn = (_ent.Priority != 0);
+                prioritySwitch.IsOn = (_ent.priority != 0);
 
                 addButton.Content = "Edit";
                 photoButton.Content = "Change photo ?";
@@ -150,38 +161,38 @@ namespace Collector_local_db
 
 
 
-        private  void Add_debt_click(object sender, RoutedEventArgs e)
+        private async void Add_debt_click(object sender, RoutedEventArgs e)
         {
-           
 
-              
-                var objectQuan = 0;
-                float moneyAmount = 0;
-                Category cat = null;
-                Currency cur = null;
-                int type;
-                try
+
+
+            var objectQuan = 0;
+            float moneyAmount = 0;
+            ProjectClasses.Category cat = null;
+            ProjectClasses.Currency cur = null;
+            int type;
+            try
+            {
+
+
+
+                if (titleBox.Text == "" || nameBox.Text == "")
+                    throw new Exception("title and name are NOT optional fields");
+
+                if (!_isObject)
                 {
-                 
-                    
-
-                    if(titleBox.Text =="" || nameBox.Text =="" )
-                        throw new Exception("Title and name are NOT optional fields");
-
-                    if (!_isObject)
-                    {
-                        moneyAmount = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
-                    }
-                    else
-                    {
-                        objectQuan = int.Parse(amountBox.Text);
-                    }
+                    moneyAmount = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
                 }
-                catch(Exception ex)
+                else
                 {
-                    ErrorDialog(ex.Message);
-                    return;
+                    objectQuan = int.Parse(amountBox.Text);
                 }
+            }
+            catch (Exception ex)
+            {
+                ErrorDialog(ex.Message);
+                return;
+            }
 
             if ((string)addButton.Content == "Add")
             {
@@ -193,14 +204,14 @@ namespace Collector_local_db
                     {
 
                         if (currencyBox.SelectedItem != null)
-                            cur = (Currency) currencyBox.SelectedItem;
-                        else throw new Exception("You forget to choose Currency");
+                            cur = (ProjectClasses.Currency)currencyBox.SelectedItem;
+                       // else throw new Exception("You forget to choose Currency");
 
                     }
                     else
                     {
 
-                        if (categoryBox.SelectedItem != null) cat = (Category) categoryBox.SelectedItem;
+                        if (categoryBox.SelectedItem != null) cat = (ProjectClasses.Category)categoryBox.SelectedItem;
                         else throw new Exception("You forget to choose Category ");
 
                     }
@@ -211,9 +222,8 @@ namespace Collector_local_db
                     return;
                 }
 
-                using (var db = new CollectorContext())
-                {
-                       
+              
+                    ProjectClasses.Entry debt;
                     type = (_isBorrowed) ? 1 : 2;
 
 
@@ -222,27 +232,31 @@ namespace Collector_local_db
 
 
 
-                        var obj = new Object
+                       var  obj = new ProjectClasses.Object
                         {
-                            Category = db.Categories.First(o => o.Cname == cat.Cname),
+                           // ProjectClasses.Category = 
                             Name = objectnameBox.Text,
                             Image = _base64,
                             Quantity = objectQuan
                         };
-                        var debt = new Entry
+                         debt = new ProjectClasses.Entry
                         {
-                            Type = db.Types.First(o => o.TypeId == type),
-                            Title = titleBox.Text,
-                            Who = nameBox.Text,
-                            Desc = descriptionBox.Text,
-                            Priority = prioritySwitch.IsOn ? 1 : 0,
+                            //Type = new Type {tid = type },
+                            title = titleBox.Text,
+                            who = nameBox.Text,
+                            descr = descriptionBox.Text,
+                            priority = (byte) (prioritySwitch.IsOn ? 1 : 0),
                             Object = obj,
-                            Date = initialPicker.Date.DateTime,
-                            Deadline = reminderPicker.Date.DateTime.AddMinutes(hourPicker.Time.TotalMinutes),
-                            Is_active = true
+                            date = initialPicker.Date.DateTime,
+                            deadline = reminderPicker.Date.DateTime.AddMinutes(hourPicker.Time.TotalMinutes),
+                            archived = 0,
+                            User = new ProjectClasses.User {uid  = SerwerFunction.Uid, login = SerwerFunction.login, password = SerwerFunction.password}
                         };
-                        db.Objects.Add(obj);
-                        db.Entries.Add(debt);
+                        
+
+
+                        //db.Objects.Add(obj);
+                        // db.Entries.Add(debt);
 
 
                     }
@@ -252,28 +266,37 @@ namespace Collector_local_db
 
 
 
-                        var debt = new Entry
+                         debt = new ProjectClasses.Entry
                         {
-                            Type = db.Types.First(o => o.TypeId == type),
-                            Title = titleBox.Text,
-                            Who = nameBox.Text,
-                            Desc = descriptionBox.Text,
-                            Priority = prioritySwitch.IsOn ? 1 : 0,
-                            Amount = moneyAmount,
-                            Currency = db.Currencies.First(o => o.Cursn == cur.Cursn),
-                            Date = initialPicker.Date.DateTime,
-                            Deadline = reminderPicker.Date.DateTime.AddMinutes(hourPicker.Time.TotalMinutes),
-                            Is_active = true
+                            Type = new ProjectClasses.Type { tid = type },
+                            title = titleBox.Text,
+                            who = nameBox.Text,
+                            descr = descriptionBox.Text,
+                            priority = (byte) (prioritySwitch.IsOn ? 1 : 0),
+                            amount = (decimal) moneyAmount,
+                            //Currency = db.Currencies.First(o => o.Cursn == cur.Cursn),
+                            date = initialPicker.Date.DateTime,
+                            deadline = reminderPicker.Date.DateTime.AddMinutes(hourPicker.Time.TotalMinutes),
+                            archived = 0,
+                             User = new ProjectClasses.User { uid = SerwerFunction.Uid, login = SerwerFunction.login, password = SerwerFunction.password },
+                           userid = SerwerFunction.Uid
                         };
-                        db.Entries.Add(debt);
+                        //db.Entries.Add(debt);
 
                     }
 
-                    db.SaveChanges();
-                }
 
 
-                // var remeinder_task = new Notifify(reminderPicker.Date.DateTime, hourPicker.Time);
+
+
+                    var received_debt = (ProjectClasses.Entry)await SerwerFunction.Getfromserver<ProjectClasses.Entry>("Entries" , "POST", debt);
+
+
+                    //db.SaveChanges();
+                
+
+
+                // var remeinder_task = new Notifify(reminderPicker.date.DateTime, hourPicker.Time);
 
                 //   remeinder_task.set_Notification();
 
@@ -281,61 +304,61 @@ namespace Collector_local_db
             }
             else
             {
-                using (var db = new CollectorContext())
-                {
+               
 
 
 
                     if (!_isObject)
                     {
 
-                        if (currencyBox.SelectedItem == null)
-                            cur = db.Currencies.First((o => o.Cursn == currencyBox.PlaceholderText));
-                        else
-                        cur = (Currency)currencyBox.SelectedItem;
+                        //if (currencyBox.SelectedItem == null)
+                        //    cur = db.Currencies.First((o => o.Cursn == currencyBox.PlaceholderText));
+                        //else
+                        //    cur = (ProjectClasses.Currency)currencyBox.SelectedItem;
 
 
                     }
                     else
                     {
 
-                        if (categoryBox.SelectedItem == null)
-                            cat = db.Categories.First((o => o.Cname == categoryBox.PlaceholderText));
-                        else cat = (Category)categoryBox.SelectedItem;
+                        //if (categoryBox.SelectedItem == null)
+                        //    cat = db.Categories.First((o => o.cname == categoryBox.PlaceholderText));
+                        //else cat = (ProjectClasses.Category)categoryBox.SelectedItem;
                     }
 
-                    _ent.Title = titleBox.Text;
-                    _ent.Desc = descriptionBox.Text;
-                    _ent.Who = nameBox.Text;
-                    _ent.Date = initialPicker.Date.DateTime;
-                    _ent.Deadline = reminderPicker.Date.DateTime;
-                    _ent.Priority = prioritySwitch.IsOn ? 1 : 0;
+                    _ent.title = titleBox.Text;
+                    _ent.descr = descriptionBox.Text;
+                    _ent.who = nameBox.Text;
+                    _ent.date = initialPicker.Date.DateTime;
+                    _ent.deadline = reminderPicker.Date.DateTime;
+                    _ent.priority = (byte) (prioritySwitch.IsOn ? 1 : 0);
 
-                    if (_ent.Object != null)
-                    {
-                        _ent.Object.Category = cat;
-                        _ent.Object.Name = objectnameBox.Text;
-                        _ent.Object.Quantity = int.Parse(amountBox.Text);
-                        _ent.Object.Image = _base64;
+                if (_ent.Object != null)
+                {
+                    _ent.Object.Category = cat;
+                    _ent.Object.Name = objectnameBox.Text;
+                    _ent.Object.Quantity = int.Parse(amountBox.Text);
+                    _ent.Object.Image = _base64;
 
-                        db.Update(_ent);
-                        db.Update(_ent.Object);
-                        db.SaveChanges();
-                    }
-                    else
-                    {
-                        _ent.Amount = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
-                        _ent.Currency = cur;
-                        db.Update(_ent);
-                        db.SaveChanges();
-                    }
+                    //db.Update(_ent);
+                    //db.Update(_ent.Object);
+                    //db.SaveChanges();
+                }
+                else
+                {
+                    _ent.amount = (decimal) float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
+                    _ent.Currency = cur;
+                    //    db.Update(_ent);
+                    //    db.SaveChanges();
+                    //
+                }
 
-                    //  var remeinder_task = new Notifify(reminderPicker.Date.DateTime, hourPicker.Time);
+                //  var remeinder_task = new Notifify(reminderPicker.date.DateTime, hourPicker.Time);
 
                     //remeinder_task.set_Notification();
 
                     Frame.Navigate(typeof(MainPage));
-                }
+                
             }
         }
 

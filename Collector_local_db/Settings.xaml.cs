@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -12,45 +16,53 @@ namespace Collector_local_db
     /// </summary>
     public sealed partial class Settings
     {
+
+        private List<ProjectClasses.Category> CategoriesList;
+
         public Settings()
         {
             InitializeComponent();
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            using (var db = new CollectorContext())
-            {
-                Blogs.ItemsSource = db.Categories.ToList();
-
-            }
-
+        
+            Blogs.ItemsSource =  CategoriesList = ((List<ProjectClasses.Category>)await
+                SerwerFunction.Getfromserver<List<ProjectClasses.Category>>(
+                    "Categories/", "GET", null)).ToList();
 
         }
 
         private async void button_Click(object sender, RoutedEventArgs e)
         {
-            using (var db = new CollectorContext())
-            {
-                var debt = new Category
-                {
-                    Cname = CategoryBox.Text
-                };
+            
 
-                if (!db.Categories.Any(o => o.Cname == debt.Cname))
-                {
-                    db.Categories.Add(debt);
-                    db.SaveChanges();
-                    Blogs.ItemsSource = db.Categories.ToList();
-                }
-                else
-                {
-                    MessageDialog msgbox = new MessageDialog("This category already exists");
-                    msgbox.Commands.Clear();
-                    msgbox.Commands.Add(new UICommand { Label = "OK", Id = 1 });
-                    await msgbox.ShowAsync();
-                }
+          
+
+            if (CategoriesList.Any(o => o.cname == CategoryBox.Text))
+            {
+                var msgbox = new MessageDialog("This category already exists");
+                msgbox.Commands.Clear();
+                msgbox.Commands.Add(new UICommand { Label = "OK", Id = 1 });
+                await msgbox.ShowAsync();
             }
+            else
+            {
+
+                var userCategories =
+               (ProjectClasses.Category)
+                   await
+                       SerwerFunction.Getfromserver<ProjectClasses.Category>(
+                           "Categories/", "POST", new ProjectClasses.Category { cname = CategoryBox.Text });
+                
+            }
+
+        }
+
+        private void CategoryBox_OnTextChanged(object sender, TextChangedEventArgs e) { 
+            CategoryButton.IsEnabled = (CategoryBox.Text != "")? true : false;
+        
+              
         }
     }
 }
