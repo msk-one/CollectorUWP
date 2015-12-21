@@ -128,6 +128,7 @@
   <ItemGroup>
     <Content Include="Assets\BadgeLogo.scale-100.png" />
     <Content Include="Assets\charts.png" />
+    <Content Include="Assets\logout.png" />
     <Content Include="Assets\settings.png" />
     <Content Include="Assets\SplashScreen.scale-400.png" />
     <Content Include="Assets\Square310x310Logo.scale-100.png" />

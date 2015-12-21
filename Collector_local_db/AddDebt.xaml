@@ -13,9 +13,9 @@
 
             <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="COLLECTOR   - new debt" FontSize="30" Margin="0,0,0,0" Foreground="#FFC9ACAC"/>
         </Border>
-        <AutoSuggestBox x:Name="titleBox" HorizontalAlignment="Left" Margin="141,213,0,0" VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="title" TextChanged="fill_users"/>
+        <TextBox x:Name="titleBox" HorizontalAlignment="Left" Margin="141,213,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="title" TextChanged="namebox_TextChanged"/>
 
-        <TextBox x:Name="nameBox" HorizontalAlignment="Left" Margin="141,315,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="name and surname" TextChanged="namebox_TextChanged"/>
+        <AutoSuggestBox x:Name="nameBox" HorizontalAlignment="Left" Margin="141,315,0,0"   VerticalAlignment="Top" Height="56" Width="362" PlaceholderText="name and surname" TextChanged="fill_users"/>
 
         <TextBox x:Name="amountBox" HorizontalAlignment="Left" Margin="141,426,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="56" Width="282" PlaceholderText="amount" InputScope="Digits" TextChanged="amountBox_TextChanged" />
 

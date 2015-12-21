@@ -44,7 +44,7 @@
                                     <TextBlock x:Name="titlebox" Grid.Column="0" Grid.Row="0" Text="{Binding title}" FontSize="15" FontStyle="Oblique" />
                                     <TextBlock x:Name="deadlinebox" Grid.Column="1" Grid.Row="0" Text="{Binding deadline}" />
                                     <TextBlock x:Name="amountbox" Grid.Column="2" Grid.Row="0" Text="{Binding amount}" />
-                                    <TextBlock x:Name="amountbox_currency" Grid.Column="2" Grid.Row="0" Text="{Binding Path=Currency}" />
+                                  <!--<TextBlock x:Name="amountbox_currency" Grid.Column="2" Grid.Row="0" Text="{Binding Path=Currency}" />-->
                                     <TextBlock x:Name="descbox" Grid.Column="0" Grid.Row="1" Text="{Binding descr}" />
                                     <TextBlock x:Name="whobox" Grid.Column="1" Grid.Row="1" Text="{Binding who}" />
                                     <TextBlock x:Name="entryid" Grid.Column="1" Grid.Row="1" Text="{Binding id}" Visibility="Collapsed" />
@@ -98,7 +98,7 @@
                                     <TextBlock  Grid.Column="0" Grid.Row="0" Text="{Binding title}" FontSize="15" FontStyle="Oblique" />
                                     <TextBlock  Grid.Column="1" Grid.Row="0" Text="{Binding deadline}" />
                                     <TextBlock  Grid.Column="2" Grid.Row="0" Text="{Binding amount}" />
-                                    <TextBlock  Grid.Column="2" Grid.Row="0" Text="{Binding Path=Currency}" />
+                                    <!--<TextBlock  Grid.Column="2" Grid.Row="0" Text="{Binding Path=Currency}" />-->
                                     <TextBlock  Grid.Column="0" Grid.Row="1" Text="{Binding descr}" />
                                     <TextBlock  Grid.Column="1" Grid.Row="1" Text="{Binding who}" />
                                     <TextBlock  Grid.Column="1" Grid.Row="1" Text="{Binding id}" Visibility="Collapsed" />
@@ -131,9 +131,12 @@
                 </LinearGradientBrush>
             </Button.Background>
         </Button>
-        
-        
-        <Image Source="Assets/settings.png" x:Name="settings_image" Width="50" Height="50" Margin="0" RenderTransformOrigin="0.492,0.475" RequestedTheme="light"   Canvas.ZIndex="3" HorizontalAlignment="Right" VerticalAlignment="Top" PointerReleased="SettingsClick">
+
+
+
+        <Image Source="Assets/logout.png" x:Name="logout_image" Width="50" Height="50" RenderTransformOrigin="0.492,0.475" RequestedTheme="light"   Canvas.ZIndex="3" HorizontalAlignment="Right" VerticalAlignment="Top" PointerReleased="Logout_click"/>
+         
+        <Image Source="Assets/settings.png" x:Name="settings_image" Width="50" Height="50" RenderTransformOrigin="0.492,0.475" RequestedTheme="light"   Canvas.ZIndex="3" HorizontalAlignment="Right" VerticalAlignment="Top" PointerReleased="SettingsClick" Margin="0,0,155,0">
             <Image.Projection>
                 <PlaneProjection RotationX="-0.782" RotationY="-19.997" RotationZ="-2.078"/>
             </Image.Projection>

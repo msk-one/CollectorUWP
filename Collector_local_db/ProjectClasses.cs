@@ -15,11 +15,12 @@ namespace Collector_local_db
             public string title { get; set; }
             public DateTime date { get; set; }
             public string descr { get; set; }
+            public int? objectid { get; set; }
             public string who { get; set; }
             public decimal amount { get; set; }
             public byte priority { get; set; }
             public DateTime deadline { get; set; }
-            public int currencyid { get; set; }
+            public int? currencyid { get; set; }
             public byte archived { get; set; }
             public int userid { get; set; }
             public Currency Currency { get; set; }
@@ -43,9 +44,9 @@ namespace Collector_local_db
 
         public class Object
         {
-          
+           public int oid { get; set; }
             public string name { get; set; }
-            //public string image { get; set; }
+            public byte [] image { get; set; }
             public  int catid { get; set; }
             public int quantity { get; set; }
             public Category Category { get; set; }

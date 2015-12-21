@@ -30,7 +30,7 @@ namespace Collector_local_db
             request.ContentType = "text/json";
             request.Method = type;
             
-            if (type == "POST")
+            if (type == "POST" || type =="PUT")
             {
                 try
             {
@@ -82,8 +82,16 @@ namespace Collector_local_db
 
         private static void ErrorDialog(string message)
         {
+            string problem;
+            if (message ==
+                "An error occurred while sending the request. The text associated with this error code could not be found.\r\n\r\nThe certificate authority is invalid or incorrect\r\n")
+                problem = "You dont have access to ssl certificate";
+            else
+                problem = (message == "Input string was not in a correct format.")
+                    ? "There is something wrong with numbers"
+                    : message;
+            
 
-            var problem = message == "Input string was not in a correct format." ? "There is something wrong with numbers" : message;
 
             var msgbox = new MessageDialog(problem);
 

@@ -65,146 +65,116 @@ namespace Collector_local_db
         public MainPage()
         {
             InitializeComponent();
+            if (SerwerFunction.Uid != -1) return;
 
-
-            if (SerwerFunction.Uid == -1)
+            var dialog = new ContentDialog()
             {
-                var dialog = new ContentDialog()
+                Title = "Log in:",
+                RequestedTheme = ElementTheme.Dark,
+
+                MaxWidth = this.ActualWidth
+            };
+
+            // Setup Content
+            var panel = new StackPanel();
+
+            var usrnName = new TextBox()
+            {
+                Name = "UsernameBox",
+                PlaceholderText = "Username",
+                TextWrapping = TextWrapping.Wrap
+
+            };
+
+
+
+            panel.Children.Add(usrnName);
+            var passwd = new PasswordBox
+            {
+                PlaceholderText = "Password:",
+                Name = "PasswdBox"
+            };
+
+            usrnName.TextChanged += delegate
+            {
+                dialog.IsPrimaryButtonEnabled = (passwd.Password != "" && usrnName.Text != "") ? true : false;
+            };
+
+            passwd.PasswordChanged += delegate
+            {
+                dialog.IsPrimaryButtonEnabled = (passwd.Password != "" && usrnName.Text != "") ? true : false;
+            };
+
+            panel.Children.Add(passwd);
+
+
+            var cb = new CheckBox { Name = "registercheck" };
+
+            var dockTop = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Children = { new TextBlock { Text = "I want to register \t" }, cb }
+            };
+
+            panel.Children.Add(dockTop);
+
+            dialog.Content = panel;
+
+            // Add Buttons
+            dialog.PrimaryButtonText = "Log";
+            dialog.IsPrimaryButtonEnabled = false;
+
+            dialog.PrimaryButtonClick += async delegate
+            {
+                var namepath = (cb.IsChecked.HasValue && cb.IsChecked.Value == true)
+                    ? "RegisterUser"
+                    : "LoginUser";
+                try
                 {
-                    Title = "Log in:",
-                    RequestedTheme = ElementTheme.Dark,
-                   
-                    MaxWidth = this.ActualWidth
-                };
+                    var respondLoginInfo =
+                        (BackLogin)
+                            await
+                                SerwerFunction.Getfromserver<BackLogin>(
+                                    namepath, "POST",
+                                    new Login(usrnName.Text, passwd.Password));
+                    if (respondLoginInfo == null)
+                        dialog.ShowAsync();
 
-                // Setup Content
-                var panel = new StackPanel();
-                
-                var usrnName = new TextBox()
+
+
+                    SerwerFunction.password = respondLoginInfo.token;
+                    SerwerFunction.login = respondLoginInfo.login;
+                    SerwerFunction.Uid = respondLoginInfo.uid;
+                    TitleBlock.Text = "COLLECTOR - welcome: " + respondLoginInfo.login;
+
+                }
+                catch
                 {
-                    Name = "UsernameBox",
-                    PlaceholderText = "Username",
-                    TextWrapping = TextWrapping.Wrap
-
-                };
-
-               
-
-                panel.Children.Add(usrnName);
-                var passwd = new PasswordBox
-                {
-                    PlaceholderText = "Password:",
-                    Name = "PasswdBox"
-                };
-
-                usrnName.TextChanged += delegate
-                {
-                    dialog.IsPrimaryButtonEnabled = (passwd.Password != "" && usrnName.Text != "") ? true : false;
-                };
-
-                passwd.PasswordChanged += delegate
-                {
-                    dialog.IsPrimaryButtonEnabled = (passwd.Password != "" && usrnName.Text != "") ? true : false;
-                };
-
-                panel.Children.Add(passwd);
+                    dialog.Title = "This name is already taken or password is wrong";
+                    dialog.FontSize = 5;
+                }
 
 
-                var cb = new CheckBox {Name = "registercheck"};
-
-                var dockTop = new StackPanel
-                {
-                    Orientation = Orientation.Horizontal,
-                    Children = { new TextBlock { Text = "I want to register     " }, cb }
-                };
-
-                panel.Children.Add(dockTop);
-
-                dialog.Content = panel;
-
-                // Add Buttons
-                dialog.PrimaryButtonText = "Log";
-                dialog.IsPrimaryButtonEnabled = false;
-                
-                dialog.PrimaryButtonClick += async delegate
-                {
-                    var namepath = (cb.IsChecked.HasValue && cb.IsChecked.Value == true)
-                        ? "RegisterUser"
-                        : "LoginUser";
-                    try
-                    {
-                        var respondLoginInfo =
-                            (BackLogin)
-                                await
-                                    SerwerFunction.Getfromserver<BackLogin>(
-                                        namepath, "POST",
-                                        new Login(usrnName.Text, passwd.Password));
-                        if (respondLoginInfo == null)
-                            dialog.ShowAsync();
+            };
+            dialog.SecondaryButtonText = "Cancel";
+            dialog.SecondaryButtonClick += delegate
+            {
+                Application.Current.Exit();
+            };
 
 
-
-                        SerwerFunction.password = respondLoginInfo.token;
-                        SerwerFunction.login = respondLoginInfo.login;
-                        SerwerFunction.Uid = respondLoginInfo.uid;
-                        TitleBlock.Text = "COLLECTOR - welcome: " + respondLoginInfo.login;
-
-                    }
-                    catch
-                    {
-                        dialog.Title = "This name is already taken or password is wrong";
-                    }
+            var result = dialog.ShowAsync();
 
 
-                };
-                dialog.SecondaryButtonText = "Cancel";
-                dialog.SecondaryButtonClick += delegate
-                {
-                    Application.Current.Exit();
-                };
-
-
-                var result = dialog.ShowAsync();
-
-            }
         }
 
 
-        private async void  Page_Loaded(object sender, RoutedEventArgs e)
+        private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-
-            var temp2 = (string) ((PivotItem) general_pivot.SelectedItem).Header;
-
-           List<ProjectClasses.Category> CategoriesList  = ((List<ProjectClasses.Category>)await
-                SerwerFunction.Getfromserver<List<ProjectClasses.Category>>(
-                    "Categories/", "GET", null)).ToList();
-
-            for (var i = 0; i < CategoriesList.Count; i++)
-            {
-                var gridRow1 = new RowDefinition {Height = new GridLength(35)  };
-
-                grid_categories.RowDefinitions.Add(gridRow1);
-
-
-                var category = new Button
-                {
-                    Width = 300,
-                    Height = 30,
-                    Content = CategoriesList.ElementAt(i).cname
-                };
-                category.Click += fill_categories;
-
-
-                _pCategoryButtons.Add(category);
-                Grid.SetRow(category, i);
-                grid_categories.Children.Add(category);
-
-
-
-            }
-
+            if(SerwerFunction.Uid != -1)
+                TitleBlock.Text = "COLLECTOR - welcome: " + SerwerFunction.login;
         }
-
+        
 
 
 
@@ -229,33 +199,37 @@ namespace Collector_local_db
 
         }
 
-        private void fill_categories(object sender, RoutedEventArgs e)
+        private async void fill_categories(object sender, RoutedEventArgs e)
         {
             var itemInCategory = sender as Button;
 
 
             var temp2 = (string)((PivotItem)general_pivot.SelectedItem).Header;
 
-           
+            //var catid =  ProjectClasses.AllCategories.First(x => x.cname == (string)itemInCategory.Content).cid;
+            
+          
+            int catid =
+                           (int)
+                               await
+                                   SerwerFunction.Getfromserver<int>(
+                                       "GetCategoryIdFromName/" + (string)itemInCategory.Content, "GET",
+                                      null);
 
 
+            Borrow_list.ItemsSource =
+
+                ((List<ProjectClasses.Entry>)await
+                SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
+                    "GetEntriesForUser/" + SerwerFunction.Uid + "/AndType/1/AndObjCategory/"+ catid, "GET", null)).ToList().Where(o => o.archived == 0);
+
+            Lend_list.ItemsSource =
+
+                ((List<ProjectClasses.Entry>)await
+                SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
+                    "GetEntriesForUser/" + SerwerFunction.Uid + "/AndType/2/AndObjCategory/" + catid, "GET", null)).ToList().Where(o => o.archived == 0);
 
 
-
-
-                //Borrow_list.ItemsSource = db.Entries
-                //     .Include(usr => usr.Object)
-                //     .Include(usr => usr.Object.Category)
-                //     .Include(usr => usr.Type)
-                //     .Where(o => o.Object.Category.cname == (string)itemInCategory.Content && o.Type.tid == 1 && o.archived== 0)
-                //     .ToList();
-
-                //Lend_list.ItemsSource = db.Entries
-                //    .Include(usr => usr.Object)
-                //    .Include(usr => usr.Object.Category)
-                //    .Include(usr => usr.Type)
-                //    .Where(o => o.Object.Category.cname == (string)itemInCategory.Content && o.Type.tid == 2 && o.archived ==0)
-                //    .ToList();
             
             hide_all(_pCategoryButtons);
             objectBorrowButton.IsEnabled = false;
@@ -400,19 +374,18 @@ namespace Collector_local_db
             objectBorrowButton.IsEnabled = true;
             var temp2 = (string)((PivotItem)general_pivot.SelectedItem).Header;
 
-            Borrow_list.ItemsSource = ((List<ProjectClasses.Entry>)await
+            Borrow_list.ItemsSource  = ((List<ProjectClasses.Entry>)await
                 SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
-                    "GetEntriesForUser/" + SerwerFunction.Uid + "/AndType/1", "GET", null)).ToList();
+                    "GetEntriesMoneyForUser/" + SerwerFunction.Uid + "/AndType/1", "GET", null)).ToList().Where(o => o.archived == 0);
+            
+            
 
             Lend_list.ItemsSource = ((List<ProjectClasses.Entry>)await
                 SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
-                    "GetEntriesForUser/" + SerwerFunction.Uid + "/AndType/2", "GET", null)).ToList();
+                    "GetEntriesMoneyForUser/" + SerwerFunction.Uid + "/AndType/2", "GET", null)).ToList().Where(o => o.archived == 0); ;
 
 
-
-
-            //Borrow_list.ItemsSource = db.Entries.Where(o => o.Object == null && o.Type.tid == 1 && o.archived ==0).ToList();
-            //Lend_list.ItemsSource = db.Entries.Where(o => o.Object == null && o.Type.tid == 2 && o.archived == 0).ToList();
+            
 
             if (temp2 == "Borrow")
             {
@@ -448,8 +421,38 @@ namespace Collector_local_db
 
 
 
-        private void objectButton_Click(object sender, RoutedEventArgs e)
+        private async void objectButton_Click(object sender, RoutedEventArgs e)
         {
+
+            var CategoriesList = ((List<ProjectClasses.Category>)await
+               SerwerFunction.Getfromserver<List<ProjectClasses.Category>>(
+                   "Categories/", "GET", null)).ToList();
+
+            for (var i = 0; i < CategoriesList.Count; i++)
+            {
+                var gridRow1 = new RowDefinition { Height = new GridLength(35) };
+
+                grid_categories.RowDefinitions.Add(gridRow1);
+
+
+                var category = new Button
+                {
+                    Width = 300,
+                    Height = 30,
+                    Content = CategoriesList.ElementAt(i).cname
+                };
+                category.Click += fill_categories;
+
+
+                _pCategoryButtons.Add(category);
+                Grid.SetRow(category, i);
+                grid_categories.Children.Add(category);
+
+
+
+            }
+
+
             edit_button.Visibility = Visibility.Collapsed;
             remove_button.Visibility = Visibility.Collapsed;
             if (grid_categories.Visibility == Visibility.Visible)
@@ -470,33 +473,28 @@ namespace Collector_local_db
 
         }
 
-        private void EditButton(object sender, RoutedEventArgs e)
+        private async void EditButton(object sender, RoutedEventArgs e)
         {
             var temp2 = (string)((PivotItem)general_pivot.SelectedItem).Header;
            
                
-                var entry = (ProjectClasses.Entry)Lend_list.SelectedItem;
-                var selectedItem = (ProjectClasses.Entry)Borrow_list.SelectedItem;
-                    if (selectedItem == null && entry == null) return;
+                var selectedItemLend = (ProjectClasses.Entry)Lend_list.SelectedItem;
+                var selectedItemBorrow = (ProjectClasses.Entry)Borrow_list.SelectedItem;
+                    if (selectedItemBorrow == null && selectedItemLend == null) return;
                   
                    
-                    var id = (temp2 == "Borrow") ? selectedItem.id : entry.id;
+                    var id = (temp2 == "Borrow") ? selectedItemBorrow.id : selectedItemLend.id;
+
+            var entryGet =
+                          (ProjectClasses.Entry)
+                              await
+                                  SerwerFunction.Getfromserver<ProjectClasses.Entry>(
+                                      "Entries/" + id, "GET",
+                                     null);
 
 
+             Frame.Navigate(typeof(AddDebt), entryGet);
 
-
-                    //var selectedInfo = (from d in db.Entries
-                    //    .Include(usr => usr.Object)
-                    //    .Include(usr => usr.Object.Category)
-                    //    .Include(usr => usr.Type)
-               
-                    //    .Include(usr => usr.Currency)
-                    //    where d.id == id
-                    //    select d).FirstOrDefault();
-
-
-                   // Frame.Navigate(typeof(AddDebt), selectedInfo);
-                
         }
 
 
@@ -518,43 +516,48 @@ namespace Collector_local_db
 
 
 
-        private void remove_debt(object sender, RoutedEventArgs e)
+        private async void remove_debt(object sender, RoutedEventArgs e)
         {
             var temp2 = (string)((PivotItem)general_pivot.SelectedItem).Header;
-         
             ProjectClasses.Entry ent = null;
 
-            
-                var entry = (ProjectClasses.Entry)Lend_list.SelectedItem;
-                var selectedItem = (ProjectClasses.Entry)Borrow_list.SelectedItem;
-                if (selectedItem == null && entry == null) return;
+                var selectedItemLend = (ProjectClasses.Entry)Lend_list.SelectedItem;
+                var selectedItemBorrow = (ProjectClasses.Entry)Borrow_list.SelectedItem;
+                if (selectedItemBorrow == null && selectedItemLend == null) return;
+
+                var id = (temp2 == "Borrow")? selectedItemBorrow.id: selectedItemLend.id;
 
 
-                var id = (temp2 == "Borrow")? selectedItem.id: entry.id;
 
-            
-                //ent = (from d in db.Entries
-                //   .Include(usr => usr.Object)
-                //   .Include(usr => usr.Currency)
-                //   .Include(usr => usr.Type)
-                //   .Include(usr => usr.Object.Category)
-                //       where d.id == id
-                //       select d).FirstOrDefault();
+            var entryGet =
+                          (ProjectClasses.Entry)
+                              await
+                                  SerwerFunction.Getfromserver<ProjectClasses.Entry>(
+                                      "Entries/" + id, "GET",
+                                     null);
 
 
-                //ent.archived = 1;
+            entryGet.archived = 1;
 
-                //var typeid = ent.Type.tid;
-                    
-               
-                //db.SaveChanges();
-            
-                //if(typeid == 1)
-                //Borrow_list.ItemsSource = (ent.Object != null) ? db.Entries.Where(o => o.Object != null && o.Type.tid == typeid && ent.archived == 0).ToList() : db.Entries.Where(o => o.Object == null && o.Type.tid == typeid && ent.archived == 0).ToList();
-                //else
-                //Lend_list.ItemsSource = (ent.Object != null) ? db.Entries.Where(o => o.Object != null && o.Type.tid == typeid && ent.archived == 0).ToList() : db.Entries.Where(o => o.Object == null && o.Type.tid == typeid && ent.archived == 0).ToList();
+            entryGet =
+                          (ProjectClasses.Entry)
+                              await
+                                  SerwerFunction.Getfromserver<ProjectClasses.Entry>(
+                                      "Entries/" + id, "PUT",
+                                     entryGet);
 
-            
+
+            var typeid = entryGet.Type.tid;
+
+
+
+
+            //if (typeid == 1)
+            //    Borrow_list.ItemsSource = (entryGet.Object != null) ? db.Entries.Where(o => o.Object != null && o.Type.tid == typeid && ent.archived == 0).ToList() : db.Entries.Where(o => o.Object == null && o.Type.tid == typeid && ent.archived == 0).ToList();
+            //else
+            //    Lend_list.ItemsSource = (entryGet.Object != null) ? db.Entries.Where(o => o.Object != null && o.Type.tid == typeid && ent.archived == 0).ToList() : db.Entries.Where(o => o.Object == null && o.Type.tid == typeid && ent.archived == 0).ToList();
+
+
         }
 
         private async void send_debt(object sender, RoutedEventArgs e)
@@ -566,7 +569,7 @@ namespace Collector_local_db
             {
                 Title = "Send this to:",
                 RequestedTheme = ElementTheme.Dark,
-                //FullSizeDesired = true,
+        
                 MaxWidth = this.ActualWidth
             };
 
@@ -582,21 +585,82 @@ namespace Collector_local_db
 
             };
 
-            usrnName.TextChanged += fill_users;
-
+            usrnName.TextChanged += (AutoSuggestBox sender2, AutoSuggestBoxTextChangedEventArgs args) =>
+            {
+                if (args.Reason != AutoSuggestionBoxTextChangeReason.UserInput) return;
+                if (sender2.Text.Length > 0)
+                {
+                    sender2.ItemsSource = GetSuggestions(sender2.Text);
+                    dialog.IsPrimaryButtonEnabled = true;
+                }
+                else
+                {
+                    sender2.ItemsSource = new string[] { "No suggestions..." };
+                    dialog.IsPrimaryButtonEnabled = false;
+                }
+            };
             panel.Children.Add(usrnName);
             dialog.Content = panel;
-
+            dialog.IsPrimaryButtonEnabled = false;
             // Add Buttons
             dialog.PrimaryButtonText = "Send";
 
-           // TODO: dodac api które po wyslaniu username zwroci mi jego id
-            dialog.PrimaryButtonClick +=  delegate
+           
+            dialog.PrimaryButtonClick += async delegate
             {
-               
-                
 
-                };
+                var temp2 = (string)((PivotItem)general_pivot.SelectedItem).Header;
+                ProjectClasses.Entry ent = null;
+
+                var selectedItemLend = (ProjectClasses.Entry)Lend_list.SelectedItem;
+                var selectedItemBorrow = (ProjectClasses.Entry)Borrow_list.SelectedItem;
+                if (selectedItemBorrow == null && selectedItemLend == null) return;
+
+                var id = (temp2 == "Borrow") ? selectedItemBorrow.id : selectedItemLend.id;
+
+                try
+                {
+                    int userSendId =
+                        (int)
+                            await
+                                SerwerFunction.Getfromserver<int>(
+                                    "GetUserIdFromName/" + usrnName.Text, "GET",
+                                    null);
+
+
+                    var entryGet =
+                        (ProjectClasses.Entry)
+                            await
+                                SerwerFunction.Getfromserver<ProjectClasses.Entry>(
+                                    "Entries/" + id, "GET",
+                                    null);
+
+                    if(entryGet == null)
+                        dialog.ShowAsync();
+
+                    entryGet.typeid = (temp2 == "Borrow") ? 2 : 1;
+                    entryGet.User = null;
+                    entryGet.Object = null;
+                    entryGet.Currency = null;
+                    entryGet.Type = null;
+                    entryGet.userid = userSendId;
+
+                    entryGet.who = SerwerFunction.login;
+                    var entryPost =
+                        (ProjectClasses.Entry)
+                            await
+                                SerwerFunction.Getfromserver<ProjectClasses.Entry>(
+                                    "Entries", "POST",
+                                    entryGet);
+                }
+                catch
+                {
+                    dialog.Title = "This name is already taken or password is wrong";
+                    
+                }
+
+
+            };
                 dialog.SecondaryButtonText = "Cancel";
             dialog.SecondaryButtonClick += delegate
             {
@@ -610,21 +674,117 @@ namespace Collector_local_db
 
         }
 
-        private void fill_users(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
-        {
-            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
-            {
-                sender.ItemsSource = sender.Text.Length > 1 ? GetSuggestions(sender.Text) : new string[] {"No suggestions..."};
-            }
-        }
+       
 
 
         private static string[] GetSuggestions(string text)
         {
-             return (ProjectClasses.AllUsers.Where(x => x.login.Contains(text))).Select(s => s.login).ToArray().Distinct().ToArray();
+             return  ProjectClasses.AllUsers.Where(x => x.login.Contains(text) && x.login != SerwerFunction.login).Select(s => s.login).ToArray().Distinct().ToArray();
+             
         }
 
 
+        private void Logout_click(object sender, PointerRoutedEventArgs e)
+        {
+
+            var dialog = new ContentDialog()
+            {
+                Title = "Log in:",
+                RequestedTheme = ElementTheme.Dark,
+
+                MaxWidth = this.ActualWidth
+            };
+
+            // Setup Content
+            var panel = new StackPanel();
+
+            var usrnName = new TextBox()
+            {
+                Name = "UsernameBox",
+                PlaceholderText = "Username",
+                TextWrapping = TextWrapping.Wrap
+
+            };
+
+
+
+            panel.Children.Add(usrnName);
+            var passwd = new PasswordBox
+            {
+                PlaceholderText = "Password:",
+                Name = "PasswdBox"
+            };
+
+            usrnName.TextChanged += delegate
+            {
+                dialog.IsPrimaryButtonEnabled = (passwd.Password != "" && usrnName.Text != "") ? true : false;
+            };
+
+            passwd.PasswordChanged += delegate
+            {
+                dialog.IsPrimaryButtonEnabled = (passwd.Password != "" && usrnName.Text != "") ? true : false;
+            };
+
+            panel.Children.Add(passwd);
+
+
+            var cb = new CheckBox { Name = "registercheck" };
+
+            var dockTop = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Children = { new TextBlock { Text = "I want to register \t" }, cb }
+            };
+
+            panel.Children.Add(dockTop);
+
+            dialog.Content = panel;
+
+            // Add Buttons
+            dialog.PrimaryButtonText = "Log";
+            dialog.IsPrimaryButtonEnabled = false;
+
+            dialog.PrimaryButtonClick += async delegate
+            {
+                var namepath = (cb.IsChecked.HasValue && cb.IsChecked.Value == true)
+                    ? "RegisterUser"
+                    : "LoginUser";
+                try
+                {
+                    var respondLoginInfo =
+                        (BackLogin)
+                            await
+                                SerwerFunction.Getfromserver<BackLogin>(
+                                    namepath, "POST",
+                                    new Login(usrnName.Text, passwd.Password));
+                    if (respondLoginInfo == null)
+                        dialog.ShowAsync();
+
+
+
+                    SerwerFunction.password = respondLoginInfo.token;
+                    SerwerFunction.login = respondLoginInfo.login;
+                    SerwerFunction.Uid = respondLoginInfo.uid;
+                    TitleBlock.Text = "COLLECTOR - welcome: " + respondLoginInfo.login;
+
+                }
+                catch
+                {
+                    dialog.Title = "This name is already taken or password is wrong";
+                   
+                }
+
+
+            };
+            dialog.SecondaryButtonText = "Cancel";
+            dialog.SecondaryButtonClick += delegate
+            {
+                Application.Current.Exit();
+            };
+
+
+            var result = dialog.ShowAsync();
+        }
     }
     }
 

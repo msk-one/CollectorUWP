@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
@@ -148,7 +149,7 @@ namespace Collector_local_db
                 {
                     amountBox.Text = _ent.amount.ToString(CultureInfo.InvariantCulture.NumberFormat);
 
-                   // currencyBox.PlaceholderText = _ent.Currency.Cursn;
+                    currencyBox.PlaceholderText = _ent.Currency.cursign;
                 }
                 initialPicker.Date = new DateTimeOffset(_ent.date);
                 reminderPicker.Date = new DateTimeOffset(_ent.deadline);
@@ -239,30 +240,31 @@ namespace Collector_local_db
 
                     var  obj = new ProjectClasses.Object
                         {
-                           
                             name = objectnameBox.Text,
-                         //   image = _base64,
+                            image = null,
                             quantity = objectQuan,
                             catid = cat_final.cid,
-                            Category =  cat_final
-
                         };
-                         debt = new ProjectClasses.Entry
+
+                    
+                    var received_object = (ProjectClasses.Object)await SerwerFunction.Getfromserver<ProjectClasses.Object>("Objects", "POST", obj);
+                    
+
+                    debt = new ProjectClasses.Entry
                         {
-                            //Type = new Type {tid = type },
+                            typeid = type,
                             title = titleBox.Text,
+                            objectid = received_object.oid,
                             who = nameBox.Text,
                             descr = descriptionBox.Text,
                             priority = (byte) (prioritySwitch.IsOn ? 1 : 0),
-                            Object = obj,
                             date = initialPicker.Date.DateTime,
                             deadline = reminderPicker.Date.DateTime.AddMinutes(hourPicker.Time.TotalMinutes),
                             archived = 0,
-                            User = new ProjectClasses.User {uid  = SerwerFunction.Uid, login = SerwerFunction.login, password = SerwerFunction.password}
-                        };
+                            userid = SerwerFunction.Uid,
+                            amount = received_object.quantity
+                    };
                         
-
-                    
 
                     }
                     else
@@ -273,31 +275,29 @@ namespace Collector_local_db
 
                          debt = new ProjectClasses.Entry
                         {
-                             typeid = type,
-                        //    Type = new ProjectClasses.Type { tid = type },
+                            typeid = type,
                             title = titleBox.Text,
                             date = initialPicker.Date.DateTime,
                             who = nameBox.Text,
-                             amount = moneyAmount,
-                             descr = descriptionBox.Text,
+                            amount = moneyAmount,
+                            descr = descriptionBox.Text,
                             priority = (byte) (prioritySwitch.IsOn ? 1 : 0),
-                             deadline = reminderPicker.Date.DateTime.AddMinutes(hourPicker.Time.TotalMinutes),
+                            deadline = reminderPicker.Date.DateTime.AddMinutes(hourPicker.Time.TotalMinutes),
                             currencyid = cur_final.crid,
                             archived = 0,
-                             userid = SerwerFunction.Uid,
-                          //   Currency = cur_final,
-                         //    User = new ProjectClasses.User { uid = SerwerFunction.Uid, login = SerwerFunction.login, password = SerwerFunction.password }
+                            userid = SerwerFunction.Uid,
+                        
                             
                         };
-                       
 
-                    }
-
-
+                    
+                }
 
 
+                
 
-                    var received_debt = (ProjectClasses.Entry)await SerwerFunction.Getfromserver<ProjectClasses.Entry>("Entries" , "POST", debt);
+
+                var received_debt = (ProjectClasses.Entry)await SerwerFunction.Getfromserver<ProjectClasses.Entry>("Entries" , "POST", debt);
 
 
                    
@@ -346,26 +346,29 @@ namespace Collector_local_db
                     _ent.Object.Category = cat;
                     _ent.Object.name = objectnameBox.Text;
                     _ent.Object.quantity = int.Parse(amountBox.Text);
-                   // _ent.Object.image = _base64;
+                   //_ent.Object.image = _base64;
 
-                    //db.Update(_ent);
-                    //db.Update(_ent.Object);
-                    //db.SaveChanges();
+                    
                 }
                 else
                 {
                     _ent.amount = (decimal) float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
                     _ent.Currency = cur;
-                    //    db.Update(_ent);
-                    //    db.SaveChanges();
-                    //
+                   
                 }
 
                 //  var remeinder_task = new Notifify(reminderPicker.date.DateTime, hourPicker.Time);
 
-                    //remeinder_task.set_Notification();
+                //remeinder_task.set_Notification();
+                _ent.Type = null;
+                _ent.Object = null;
+                _ent.Currency = null;
+                _ent.User = null;
+               //TODO: wez id z obiektu i dodaj do puta;
 
-                    Frame.Navigate(typeof(MainPage));
+                var received_debt = (ProjectClasses.Entry)await SerwerFunction.Getfromserver<ProjectClasses.Entry>("Entries/" +, "PUT", _ent);
+
+                Frame.Navigate(typeof(MainPage));
                 
             }
         }
@@ -408,8 +411,11 @@ namespace Collector_local_db
             {
                 var file = await picker.PickSingleFileAsync();
                 var img = await LoadImage(file);
+
                 _base64 = await Base64Converter.ToBase64(file);
                 image.Source = img;
+                
+
             }
             catch (Exception ex)
             {
@@ -433,7 +439,7 @@ namespace Collector_local_db
         }
 
 
-
+      
 
         private void amountBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -449,11 +455,12 @@ namespace Collector_local_db
             }
         }
 
+
     
 
         private void namebox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            nameBox.Background = (nameBox.Text == "") ? new SolidColorBrush(Colors.PaleVioletRed) : new SolidColorBrush(Colors.White);
+        {   var but = (TextBox)sender;
+            but.Background = (titleBox.Text == "") ? new SolidColorBrush(Colors.PaleVioletRed) : new SolidColorBrush(Colors.White);
         }
 
 
@@ -467,10 +474,10 @@ namespace Collector_local_db
                 {
                     sender.ItemsSource = new string[] {"No suggestions..."};
 
-                    titleBox.Background = (titleBox.Text == "")
+                    sender.Background = (sender.Text == "")
                         ? new SolidColorBrush(Colors.PaleVioletRed)
                         : new SolidColorBrush(Colors.White);
-                    titleBox.UpdateLayout();
+                    sender.UpdateLayout();
 
                 }
 
@@ -480,7 +487,7 @@ namespace Collector_local_db
 
         private static string[] GetSuggestions(string text)
         {
-            return (ProjectClasses.AllUsers.Where(x => x.login.Contains(text))).Select(s => s.login).ToArray().Distinct().ToArray();
+            return (ProjectClasses.AllUsers.Where(x => x.login.Contains(text) && x.login != SerwerFunction.login)).Select(s => s.login).ToArray().Distinct().ToArray();
         }
 
     }

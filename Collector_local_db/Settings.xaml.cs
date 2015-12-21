@@ -17,8 +17,6 @@ namespace Collector_local_db
     public sealed partial class Settings
     {
 
-        private List<ProjectClasses.Category> CategoriesList;
-
         public Settings()
         {
             InitializeComponent();
@@ -27,7 +25,7 @@ namespace Collector_local_db
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
         
-            Blogs.ItemsSource =  CategoriesList = ((List<ProjectClasses.Category>)await
+            Blogs.ItemsSource =  ProjectClasses.AllCategories = ((List<ProjectClasses.Category>)await
                 SerwerFunction.Getfromserver<List<ProjectClasses.Category>>(
                     "Categories/", "GET", null)).ToList();
 
@@ -39,7 +37,7 @@ namespace Collector_local_db
 
           
 
-            if (CategoriesList.Any(o => o.cname == CategoryBox.Text))
+            if (ProjectClasses.AllCategories.Any(o => o.cname == CategoryBox.Text))
             {
                 var msgbox = new MessageDialog("This category already exists");
                 msgbox.Commands.Clear();
@@ -54,7 +52,12 @@ namespace Collector_local_db
                    await
                        SerwerFunction.Getfromserver<ProjectClasses.Category>(
                            "Categories/", "POST", new ProjectClasses.Category { cname = CategoryBox.Text });
-                
+
+
+                Blogs.ItemsSource = ProjectClasses.AllCategories = ((List<ProjectClasses.Category>)await
+               SerwerFunction.Getfromserver<List<ProjectClasses.Category>>(
+                   "Categories/", "GET", null)).ToList();
+
             }
 
         }
