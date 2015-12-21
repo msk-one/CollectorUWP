@@ -19,6 +19,7 @@ namespace Collector_local_db
             public decimal amount { get; set; }
             public byte priority { get; set; }
             public DateTime deadline { get; set; }
+            public int currencyid { get; set; }
             public byte archived { get; set; }
             public int userid { get; set; }
             public Currency Currency { get; set; }
@@ -38,14 +39,15 @@ namespace Collector_local_db
             public List<Entry> Entries { get; set; }
 
         }
+       public static  List<ProjectClasses.User> AllUsers ;
 
         public class Object
         {
           
-            public string Name { get; set; }
-            public string Image { get; set; }
-
-            public int Quantity { get; set; }
+            public string name { get; set; }
+            //public string image { get; set; }
+            public  int catid { get; set; }
+            public int quantity { get; set; }
             public Category Category { get; set; }
         }
 
@@ -56,7 +58,9 @@ namespace Collector_local_db
             public string cname { get; set; }
             
         }
-        
+
+
+        public static List<ProjectClasses.Category> AllCategories;
 
         public class Type
         {
@@ -75,5 +79,7 @@ namespace Collector_local_db
             public int crid { get; set; }
 
         }
+
+        public static List<ProjectClasses.Currency> AllCurrencies;
     }
 }

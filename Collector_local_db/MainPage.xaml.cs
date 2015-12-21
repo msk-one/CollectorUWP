@@ -168,44 +168,46 @@ namespace Collector_local_db
 
             }
         }
-        
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+
+        private async void  Page_Loaded(object sender, RoutedEventArgs e)
         {
 
-            var temp2 = (string)((PivotItem)general_pivot.SelectedItem).Header;
+            var temp2 = (string) ((PivotItem) general_pivot.SelectedItem).Header;
 
-            
+           List<ProjectClasses.Category> CategoriesList  = ((List<ProjectClasses.Category>)await
+                SerwerFunction.Getfromserver<List<ProjectClasses.Category>>(
+                    "Categories/", "GET", null)).ToList();
 
-                //for (var i = 0; i < db.Categories.Count(); i++)
-                //{
-                //    var gridRow1 = new RowDefinition {Height = new GridLength(35)};
+            for (var i = 0; i < CategoriesList.Count; i++)
+            {
+                var gridRow1 = new RowDefinition {Height = new GridLength(35)  };
 
-                //    grid_categories.RowDefinitions.Add(gridRow1);
-
-
-                //    var category = new Button
-                //    {
-                //        Width = double.NaN,
-                //        Height = 30,
-                //        Content = db.Categories.ToList().ElementAt(i).cname
-                //    };
-                //    category.Click += fill_categories;
+                grid_categories.RowDefinitions.Add(gridRow1);
 
 
-                //    _pCategoryButtons.Add(category);
-                //    Grid.SetRow(category, i);
-                //    grid_categories.Children.Add(category);
+                var category = new Button
+                {
+                    Width = 300,
+                    Height = 30,
+                    Content = CategoriesList.ElementAt(i).cname
+                };
+                category.Click += fill_categories;
+
+
+                _pCategoryButtons.Add(category);
+                Grid.SetRow(category, i);
+                grid_categories.Children.Add(category);
 
 
 
-                }
+            }
+
+        }
 
 
-            
 
 
-        
 
         private static void hide_all(IEnumerable<Button> buttons)
         {
@@ -386,11 +388,11 @@ namespace Collector_local_db
             Frame.Navigate(typeof(Trash));
         }
 
-        
 
 
 
-        private void moneyButton_Click(object sender, RoutedEventArgs e)
+
+        private async void moneyButton_Click(object sender, RoutedEventArgs e)
         {
             edit_button.Visibility = Visibility.Collapsed;
             remove_button.Visibility = Visibility.Collapsed;
@@ -398,10 +400,20 @@ namespace Collector_local_db
             objectBorrowButton.IsEnabled = true;
             var temp2 = (string)((PivotItem)general_pivot.SelectedItem).Header;
 
-            
-                //Borrow_list.ItemsSource = db.Entries.Where(o => o.Object == null && o.Type.tid == 1 && o.archived ==0).ToList();
-                //Lend_list.ItemsSource = db.Entries.Where(o => o.Object == null && o.Type.tid == 2 && o.archived == 0).ToList();
-            
+            Borrow_list.ItemsSource = ((List<ProjectClasses.Entry>)await
+                SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
+                    "GetEntriesForUser/" + SerwerFunction.Uid + "/AndType/1", "GET", null)).ToList();
+
+            Lend_list.ItemsSource = ((List<ProjectClasses.Entry>)await
+                SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
+                    "GetEntriesForUser/" + SerwerFunction.Uid + "/AndType/2", "GET", null)).ToList();
+
+
+
+
+            //Borrow_list.ItemsSource = db.Entries.Where(o => o.Object == null && o.Type.tid == 1 && o.archived ==0).ToList();
+            //Lend_list.ItemsSource = db.Entries.Where(o => o.Object == null && o.Type.tid == 2 && o.archived == 0).ToList();
+
             if (temp2 == "Borrow")
             {
 
@@ -545,8 +557,11 @@ namespace Collector_local_db
             
         }
 
-        private void send_debt(object sender, RoutedEventArgs e)
+        private async void send_debt(object sender, RoutedEventArgs e)
         {
+            ProjectClasses.AllUsers = ((List<ProjectClasses.User>)await
+               SerwerFunction.Getfromserver<List<ProjectClasses.User>>(
+                   "Users", "GET", null)).ToList();
             var dialog = new ContentDialog()
             {
                 Title = "Send this to:",
@@ -558,13 +573,16 @@ namespace Collector_local_db
             // Setup Content
             var panel = new StackPanel();
 
-            var usrnName = new TextBox()
+            var usrnName = new AutoSuggestBox
             {
                 Name = "UsernameBox",
-                PlaceholderText = "Username",
-                TextWrapping = TextWrapping.Wrap
+                
+                
+              
 
             };
+
+            usrnName.TextChanged += fill_users;
 
             panel.Children.Add(usrnName);
             dialog.Content = panel;
@@ -573,19 +591,10 @@ namespace Collector_local_db
             dialog.PrimaryButtonText = "Send";
 
            // TODO: dodac api które po wyslaniu username zwroci mi jego id
-            dialog.PrimaryButtonClick += async delegate
+            dialog.PrimaryButtonClick +=  delegate
             {
-
-
-                var respondLoginInfo =
-                    (BackLogin)
-                        await
-                            SerwerFunction.Getfromserver<BackLogin>(
-                                "Users", "GET",
-                               null);
-                SerwerFunction.Uid = respondLoginInfo.uid;
-
-
+               
+                
 
                 };
                 dialog.SecondaryButtonText = "Cancel";
@@ -600,6 +609,22 @@ namespace Collector_local_db
             
 
         }
+
+        private void fill_users(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                sender.ItemsSource = sender.Text.Length > 1 ? GetSuggestions(sender.Text) : new string[] {"No suggestions..."};
+            }
+        }
+
+
+        private static string[] GetSuggestions(string text)
+        {
+             return (ProjectClasses.AllUsers.Where(x => x.login.Contains(text))).Select(s => s.login).ToArray().Distinct().ToArray();
+        }
+
+
     }
     }
 

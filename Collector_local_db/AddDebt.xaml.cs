@@ -27,10 +27,7 @@ namespace Collector_local_db
     /// 
     public sealed partial class AddDebt
     {
-        class Categories_list
-        {
-            private List<ProjectClasses.Category> categoryList;
-        }
+       
 
         private bool _isObject;
         private bool _isBorrowed;
@@ -48,18 +45,27 @@ namespace Collector_local_db
         public AddDebt()
         {
             InitializeComponent();
-
-
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            categoryBox.ItemsSource = ((List<ProjectClasses.Category>)await
+
+            ProjectClasses.AllUsers = ((List<ProjectClasses.User>)await
+               SerwerFunction.Getfromserver<List<ProjectClasses.User>>(
+                   "Users", "GET", null)).ToList();
+
+            categoryBox.ItemsSource = ProjectClasses.AllCategories = ((List<ProjectClasses.Category>)await
                 SerwerFunction.Getfromserver<List<ProjectClasses.Category>>(
                     "Categories/", "GET", null)).ToList();
 
 
-            // currencyBox.ItemsSource = db.Currencies.ToList();
+             currencyBox.ItemsSource = ProjectClasses.AllCurrencies = ((List<ProjectClasses.Currency>)await
+            SerwerFunction.Getfromserver<List<ProjectClasses.Currency>>(
+                "Currencies/", "GET", null)).ToList();
+
+
+
+
             reminderPicker.Date = reminderPicker.Date.DateTime.AddDays(1);
 
 
@@ -133,10 +139,10 @@ namespace Collector_local_db
                 if (_ent.Object != null)
                 {
 
-                    amountBox.Text = _ent.Object.Quantity.ToString();
+                    amountBox.Text = _ent.Object.quantity.ToString();
                     categoryBox.PlaceholderText = _ent.Object.Category.cname;
-                    objectnameBox.Text = _ent.Object.Name;
-                    // image.Source = await Base64Converter.FromBase64(_ent.Object.Image);
+                    objectnameBox.Text = _ent.Object.name;
+                    // image.Source = await Base64Converter.FromBase64(_ent.Object.image);
                 }
                 else
                 {
@@ -167,10 +173,9 @@ namespace Collector_local_db
 
 
             var objectQuan = 0;
-            float moneyAmount = 0;
+            decimal moneyAmount = 0;
             ProjectClasses.Category cat = null;
             ProjectClasses.Currency cur = null;
-            int type;
             try
             {
 
@@ -181,7 +186,7 @@ namespace Collector_local_db
 
                 if (!_isObject)
                 {
-                    moneyAmount = float.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
+                    moneyAmount = decimal.Parse(amountBox.Text, CultureInfo.InvariantCulture.NumberFormat);
                 }
                 else
                 {
@@ -205,7 +210,7 @@ namespace Collector_local_db
 
                         if (currencyBox.SelectedItem != null)
                             cur = (ProjectClasses.Currency)currencyBox.SelectedItem;
-                       // else throw new Exception("You forget to choose Currency");
+                        else throw new Exception("You forget to choose Currency");
 
                     }
                     else
@@ -224,20 +229,23 @@ namespace Collector_local_db
 
               
                     ProjectClasses.Entry debt;
-                    type = (_isBorrowed) ? 1 : 2;
+                    var type = (_isBorrowed) ? 1 : 2;
 
 
                     if (_isObject)
                     {
 
+                    var cat_final = ProjectClasses.AllCategories.First(o => o.cname == cat.cname);
 
-
-                       var  obj = new ProjectClasses.Object
+                    var  obj = new ProjectClasses.Object
                         {
-                           // ProjectClasses.Category = 
-                            Name = objectnameBox.Text,
-                            Image = _base64,
-                            Quantity = objectQuan
+                           
+                            name = objectnameBox.Text,
+                         //   image = _base64,
+                            quantity = objectQuan,
+                            catid = cat_final.cid,
+                            Category =  cat_final
+
                         };
                          debt = new ProjectClasses.Entry
                         {
@@ -254,34 +262,34 @@ namespace Collector_local_db
                         };
                         
 
-
-                        //db.Objects.Add(obj);
-                        // db.Entries.Add(debt);
-
+                    
 
                     }
                     else
                     {
 
 
-
+                       var cur_final =  ProjectClasses.AllCurrencies.First(o => o.cursign == cur.cursign);
 
                          debt = new ProjectClasses.Entry
                         {
-                            Type = new ProjectClasses.Type { tid = type },
+                             typeid = type,
+                        //    Type = new ProjectClasses.Type { tid = type },
                             title = titleBox.Text,
-                            who = nameBox.Text,
-                            descr = descriptionBox.Text,
-                            priority = (byte) (prioritySwitch.IsOn ? 1 : 0),
-                            amount = (decimal) moneyAmount,
-                            //Currency = db.Currencies.First(o => o.Cursn == cur.Cursn),
                             date = initialPicker.Date.DateTime,
-                            deadline = reminderPicker.Date.DateTime.AddMinutes(hourPicker.Time.TotalMinutes),
+                            who = nameBox.Text,
+                             amount = moneyAmount,
+                             descr = descriptionBox.Text,
+                            priority = (byte) (prioritySwitch.IsOn ? 1 : 0),
+                             deadline = reminderPicker.Date.DateTime.AddMinutes(hourPicker.Time.TotalMinutes),
+                            currencyid = cur_final.crid,
                             archived = 0,
-                             User = new ProjectClasses.User { uid = SerwerFunction.Uid, login = SerwerFunction.login, password = SerwerFunction.password },
-                           userid = SerwerFunction.Uid
+                             userid = SerwerFunction.Uid,
+                          //   Currency = cur_final,
+                         //    User = new ProjectClasses.User { uid = SerwerFunction.Uid, login = SerwerFunction.login, password = SerwerFunction.password }
+                            
                         };
-                        //db.Entries.Add(debt);
+                       
 
                     }
 
@@ -292,7 +300,7 @@ namespace Collector_local_db
                     var received_debt = (ProjectClasses.Entry)await SerwerFunction.Getfromserver<ProjectClasses.Entry>("Entries" , "POST", debt);
 
 
-                    //db.SaveChanges();
+                   
                 
 
 
@@ -311,22 +319,22 @@ namespace Collector_local_db
                     if (!_isObject)
                     {
 
-                        //if (currencyBox.SelectedItem == null)
-                        //    cur = db.Currencies.First((o => o.Cursn == currencyBox.PlaceholderText));
-                        //else
-                        //    cur = (ProjectClasses.Currency)currencyBox.SelectedItem;
-
-
-                    }
+                    if (currencyBox.SelectedItem == null)
+                        cur = ProjectClasses.AllCurrencies.First((o => o.cursign == currencyBox.PlaceholderText));
                     else
+                        cur = (ProjectClasses.Currency)currencyBox.SelectedItem;
+
+
+                }
+                else
                     {
 
-                        //if (categoryBox.SelectedItem == null)
-                        //    cat = db.Categories.First((o => o.cname == categoryBox.PlaceholderText));
-                        //else cat = (ProjectClasses.Category)categoryBox.SelectedItem;
-                    }
+                    if (categoryBox.SelectedItem == null)
+                        cat = ProjectClasses.AllCategories.First((o => o.cname == categoryBox.PlaceholderText));
+                    else cat = (ProjectClasses.Category)categoryBox.SelectedItem;
+                }
 
-                    _ent.title = titleBox.Text;
+                _ent.title = titleBox.Text;
                     _ent.descr = descriptionBox.Text;
                     _ent.who = nameBox.Text;
                     _ent.date = initialPicker.Date.DateTime;
@@ -336,9 +344,9 @@ namespace Collector_local_db
                 if (_ent.Object != null)
                 {
                     _ent.Object.Category = cat;
-                    _ent.Object.Name = objectnameBox.Text;
-                    _ent.Object.Quantity = int.Parse(amountBox.Text);
-                    _ent.Object.Image = _base64;
+                    _ent.Object.name = objectnameBox.Text;
+                    _ent.Object.quantity = int.Parse(amountBox.Text);
+                   // _ent.Object.image = _base64;
 
                     //db.Update(_ent);
                     //db.Update(_ent.Object);
@@ -441,14 +449,38 @@ namespace Collector_local_db
             }
         }
 
-        private void title_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            titleBox.Background = (titleBox.Text == "") ? new SolidColorBrush(Colors.PaleVioletRed) : new SolidColorBrush(Colors.White);
-        }
+    
 
         private void namebox_TextChanged(object sender, TextChangedEventArgs e)
         {
             nameBox.Background = (nameBox.Text == "") ? new SolidColorBrush(Colors.PaleVioletRed) : new SolidColorBrush(Colors.White);
+        }
+
+
+        private void fill_users(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                if (sender.Text.Length > 0)
+                    sender.ItemsSource = GetSuggestions(sender.Text);
+                else
+                {
+                    sender.ItemsSource = new string[] {"No suggestions..."};
+
+                    titleBox.Background = (titleBox.Text == "")
+                        ? new SolidColorBrush(Colors.PaleVioletRed)
+                        : new SolidColorBrush(Colors.White);
+                    titleBox.UpdateLayout();
+
+                }
+
+            }
+        }
+
+
+        private static string[] GetSuggestions(string text)
+        {
+            return (ProjectClasses.AllUsers.Where(x => x.login.Contains(text))).Select(s => s.login).ToArray().Distinct().ToArray();
         }
 
     }
