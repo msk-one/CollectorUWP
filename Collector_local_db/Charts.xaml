@@ -5,7 +5,9 @@
     xmlns:local="using:Collector_local_db"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Loaded="Page_Loaded"
+    >
     <Grid Background="#FFCFB9B9">
 
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="1920" Background="#FF154710">
@@ -15,5 +17,20 @@
             
             
         </Border>
-    </Grid>
+        <TextBlock x:Name="opening" HorizontalAlignment="Left" Margin="79,80,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="184"/>
+        <TextBlock x:Name="EntriesCount" HorizontalAlignment="Left" Margin="79,120,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="184"/>
+        <TextBlock x:Name="EntriestBorrowCoun" HorizontalAlignment="Left" Margin="79,140,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="184"/>
+        <TextBlock x:Name="EntriesLendCount" HorizontalAlignment="Left" Margin="79,160,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="184"/>
+        <TextBlock x:Name="EntriesArchivedCount" HorizontalAlignment="Left" Margin="79,180,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="184"/>
+        <TextBlock x:Name="CategoriesCount" HorizontalAlignment="Left" Margin="79,200,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="184"/>
+        <TextBlock x:Name="EntriesBorrowMoney" HorizontalAlignment="Left" Margin="79,220,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="184"/>
+        <TextBlock x:Name="EntriesLendMoney" HorizontalAlignment="Left" Margin="79,240,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="184"/>
+        <TextBlock x:Name="EntriesBorrowObject" HorizontalAlignment="Left" Margin="79,260,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="184"/>
+        <TextBlock x:Name="EntriesLendObject" HorizontalAlignment="Left" Margin="79,280,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="184"/>
+        <TextBlock x:Name="EntryBorrowMoneySum" HorizontalAlignment="Left" Margin="79,300,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="184"/>
+        <TextBlock x:Name="EntryLendMoneySum" HorizontalAlignment="Left" Margin="79,320,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="184"/>
+
+
+        <ProgressBar x:Name="ProgressUpload" IsIndeterminate="True" />
+        </Grid>
 </Page>

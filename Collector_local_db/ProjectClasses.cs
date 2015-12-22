@@ -29,6 +29,7 @@ namespace Collector_local_db
             public User User { get; set; }
         }
 
+       public static List<Entry> AllArchivedEntrys;
 
         public class User
         {
@@ -40,7 +41,7 @@ namespace Collector_local_db
             public List<Entry> Entries { get; set; }
 
         }
-       public static  List<ProjectClasses.User> AllUsers ;
+       public static  List<User> AllUsers ;
 
         public class Object
         {
@@ -61,7 +62,7 @@ namespace Collector_local_db
         }
 
 
-        public static List<ProjectClasses.Category> AllCategories;
+        public static List<Category> AllCategories;
 
         public class Type
         {
@@ -81,6 +82,6 @@ namespace Collector_local_db
 
         }
 
-        public static List<ProjectClasses.Currency> AllCurrencies;
+        public static List<Currency> AllCurrencies;
     }
 }

@@ -24,11 +24,12 @@ namespace Collector_local_db
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-        
+            ProgressUpload.IsIndeterminate = true;
+
             Blogs.ItemsSource =  ProjectClasses.AllCategories = ((List<ProjectClasses.Category>)await
                 SerwerFunction.Getfromserver<List<ProjectClasses.Category>>(
                     "Categories/", "GET", null)).ToList();
-
+            ProgressUpload.IsIndeterminate = false;
         }
 
         private async void button_Click(object sender, RoutedEventArgs e)

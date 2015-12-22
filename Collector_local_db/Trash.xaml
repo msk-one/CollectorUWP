@@ -30,13 +30,17 @@
                             <RowDefinition Height="2*" />
                             <RowDefinition Height="1*" />
                         </Grid.RowDefinitions>
-                        <TextBlock x:Name="titlebox" Grid.Column="0" Grid.Row="0" Text="{Binding Title}" FontSize="15" FontStyle="Oblique" />
-                        <TextBlock x:Name="deadlinebox" Grid.Column="1" Grid.Row="0" Text="{Binding Deadline}" />
-                        <TextBlock x:Name="amountbox" Grid.Column="2" Grid.Row="0" Text="{Binding Amount}" />
-                        <TextBlock x:Name="descbox" Grid.Column="0" Grid.Row="1" Text="{Binding Desc}" />
-                        <TextBlock x:Name="whobox" Grid.Column="1" Grid.Row="1" Text="{Binding Who}" />
-                        <TextBlock x:Name="entryid" Grid.Column="1" Grid.Row="1" Text="{Binding EntryId}" Visibility="Collapsed" />
-                        <TextBlock x:Name="priority" Grid.Column="2" Grid.Row="1" Text="P: " TextAlignment="Center" />
+                        <TextBlock x:Name="titlebox" Grid.Column="0" Grid.Row="0" Text="{Binding title}" FontSize="15" FontStyle="Oblique" />
+                        <TextBlock x:Name="deadlinebox" Grid.Column="1" Grid.Row="0" Text="{Binding deadline}" />
+                        <TextBlock x:Name="amountbox" Grid.Column="2" Grid.Row="0" Text="{Binding amount}" />
+                        <!--<TextBlock x:Name="amountbox_currency" Grid.Column="2" Grid.Row="0" Text="{Binding Path=Currency}" />-->
+                        <TextBlock x:Name="descbox" Grid.Column="0" Grid.Row="1" Text="{Binding descr}" />
+                        <TextBlock x:Name="whobox" Grid.Column="1" Grid.Row="1" Text="{Binding who}" />
+                        <TextBlock x:Name="entryid" Grid.Column="1" Grid.Row="1" Text="{Binding id}" Visibility="Collapsed" />
+                        <TextBlock x:Name="priority" Grid.Column="2" Grid.Row="1" TextAlignment="Center">
+                                        <Run Text="P:"/>
+                                        <Run Text ="{Binding priority}"/>
+                        </TextBlock>
 
                     </Grid>
 

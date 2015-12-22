@@ -30,7 +30,7 @@ namespace Collector_local_db
             request.ContentType = "text/json";
             request.Method = type;
             
-            if (type == "POST" || type =="PUT")
+            if (type == "POST" || type =="PUT" || type=="DELETE")
             {
                 try
             {

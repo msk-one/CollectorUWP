@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
@@ -112,7 +110,7 @@ namespace Collector_local_db
             {
                 _ent = (ProjectClasses.Entry)e.Parameter;
 
-                _isObject = (_ent.Object != null)? true:false;
+                _isObject = _ent.Object != null? true:false;
 
                 if (_ent.Type.tid == 1 && _ent.Object != null)
                     welcomeBlock.Text = "You borrowed an Object.";
@@ -361,12 +359,13 @@ namespace Collector_local_db
 
                 //remeinder_task.set_Notification();
                 _ent.Type = null;
+                int objId = _ent.id;
                 _ent.Object = null;
                 _ent.Currency = null;
                 _ent.User = null;
-               //TODO: wez id z obiektu i dodaj do puta;
+              
 
-                var received_debt = (ProjectClasses.Entry)await SerwerFunction.Getfromserver<ProjectClasses.Entry>("Entries/" +, "PUT", _ent);
+                var received_debt = (ProjectClasses.Entry)await SerwerFunction.Getfromserver<ProjectClasses.Entry>("Entries/" + objId, "PUT", _ent);
 
                 Frame.Navigate(typeof(MainPage));
                 
@@ -389,8 +388,6 @@ namespace Collector_local_db
             {
               
             }
-            return;
-
         }
         
 
@@ -417,13 +414,13 @@ namespace Collector_local_db
                 
 
             }
-            catch (Exception ex)
+            catch //(Exception ex)
             {
-                var msgbox = new MessageDialog(ex.Message + "\n\n\n Stack Trace:\n" + ex.StackTrace);
+                //var msgbox = new MessageDialog(ex.Message + "\n\n\n Stack Trace:\n" + ex.StackTrace);
 
-                msgbox.Commands.Clear();
-                msgbox.Commands.Add(new UICommand { Label = "OK" });
-                await msgbox.ShowAsync();
+                //msgbox.Commands.Clear();
+                //msgbox.Commands.Add(new UICommand { Label = "OK" });
+                //await msgbox.ShowAsync();
             }
         }
 
@@ -472,7 +469,7 @@ namespace Collector_local_db
                     sender.ItemsSource = GetSuggestions(sender.Text);
                 else
                 {
-                    sender.ItemsSource = new string[] {"No suggestions..."};
+                    sender.ItemsSource = new[] {"No suggestions..."};
 
                     sender.Background = (sender.Text == "")
                         ? new SolidColorBrush(Colors.PaleVioletRed)

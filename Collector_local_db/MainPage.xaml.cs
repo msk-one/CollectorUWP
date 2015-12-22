@@ -1,22 +1,10 @@
-﻿using Microsoft.Data.Entity;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Newtonsoft.Json;
-using static Windows.UI.Xaml.Controls.ContentDialogResult;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -76,7 +64,7 @@ namespace Collector_local_db
             };
 
             // Setup Content
-            var panel = new StackPanel();
+           
 
             var usrnName = new TextBox()
             {
@@ -88,7 +76,7 @@ namespace Collector_local_db
 
 
 
-            panel.Children.Add(usrnName);
+            
             var passwd = new PasswordBox
             {
                 PlaceholderText = "Password:",
@@ -105,8 +93,6 @@ namespace Collector_local_db
                 dialog.IsPrimaryButtonEnabled = (passwd.Password != "" && usrnName.Text != "") ? true : false;
             };
 
-            panel.Children.Add(passwd);
-
 
             var cb = new CheckBox { Name = "registercheck" };
 
@@ -116,11 +102,15 @@ namespace Collector_local_db
                 Children = { new TextBlock { Text = "I want to register \t" }, cb }
             };
 
-            panel.Children.Add(dockTop);
+            var panel = new StackPanel
+            {
+                Children = { usrnName, passwd, dockTop }
+
+            };
 
             dialog.Content = panel;
 
-            // Add Buttons
+            
             dialog.PrimaryButtonText = "Log";
             dialog.IsPrimaryButtonEnabled = false;
 
@@ -199,67 +189,7 @@ namespace Collector_local_db
 
         }
 
-        private async void fill_categories(object sender, RoutedEventArgs e)
-        {
-            var itemInCategory = sender as Button;
-
-
-            var temp2 = (string)((PivotItem)general_pivot.SelectedItem).Header;
-
-            //var catid =  ProjectClasses.AllCategories.First(x => x.cname == (string)itemInCategory.Content).cid;
-            
-          
-            int catid =
-                           (int)
-                               await
-                                   SerwerFunction.Getfromserver<int>(
-                                       "GetCategoryIdFromName/" + (string)itemInCategory.Content, "GET",
-                                      null);
-
-
-            Borrow_list.ItemsSource =
-
-                ((List<ProjectClasses.Entry>)await
-                SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
-                    "GetEntriesForUser/" + SerwerFunction.Uid + "/AndType/1/AndObjCategory/"+ catid, "GET", null)).ToList().Where(o => o.archived == 0);
-
-            Lend_list.ItemsSource =
-
-                ((List<ProjectClasses.Entry>)await
-                SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
-                    "GetEntriesForUser/" + SerwerFunction.Uid + "/AndType/2/AndObjCategory/" + catid, "GET", null)).ToList().Where(o => o.archived == 0);
-
-
-            
-            hide_all(_pCategoryButtons);
-            objectBorrowButton.IsEnabled = false;
-            Category_choosen.Visibility = Visibility.Visible;
-            Category_choosen.Content = (string)itemInCategory.Content;
-
-            Borrow_list.Visibility = Visibility.Visible;
-            Lend_list.Visibility = Visibility.Visible;
-
-
-        }
-
-
-        private void ShowElementsInCategory(object sender, RoutedEventArgs e)
-        {
-            var temp2 = (string)((PivotItem)general_pivot.SelectedItem).Header;
-
-            var clickedCategory = sender as Button;
-            objectBorrowButton.IsEnabled = true;
-            clickedCategory.Visibility = Visibility.Collapsed;
-
-            if (temp2 == "Borrow")
-                Borrow_list.Visibility = Visibility.Collapsed;
-            else
-                Lend_list.Visibility = Visibility.Collapsed;
-
-            show_all(_pCategoryButtons);
-
-        }
-
+      
 
 
         private async void AddButton(object sender, RoutedEventArgs e)
@@ -368,39 +298,27 @@ namespace Collector_local_db
 
         private async void moneyButton_Click(object sender, RoutedEventArgs e)
         {
-            edit_button.Visibility = Visibility.Collapsed;
-            remove_button.Visibility = Visibility.Collapsed;
+
+
+
+            ButtonsVisibility(Visibility.Collapsed);
+
             Category_choosen.Visibility = Visibility.Collapsed;
             objectBorrowButton.IsEnabled = true;
-            var temp2 = (string)((PivotItem)general_pivot.SelectedItem).Header;
 
-            Borrow_list.ItemsSource  = ((List<ProjectClasses.Entry>)await
-                SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
-                    "GetEntriesMoneyForUser/" + SerwerFunction.Uid + "/AndType/1", "GET", null)).ToList().Where(o => o.archived == 0);
-            
-            
+            var temp2 = (string) ((PivotItem) general_pivot.SelectedItem).Header;
 
-            Lend_list.ItemsSource = ((List<ProjectClasses.Entry>)await
-                SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
-                    "GetEntriesMoneyForUser/" + SerwerFunction.Uid + "/AndType/2", "GET", null)).ToList().Where(o => o.archived == 0); ;
-
-
-            
 
             if (temp2 == "Borrow")
             {
-
 
                 if (Borrow_list.Visibility == Visibility.Visible)
                 {
                     Borrow_list.Visibility = Visibility.Collapsed;
                     grid_categories.Visibility = Visibility.Collapsed;
+                    return;
                 }
-                else
-                {
-                    Borrow_list.Visibility = Visibility.Visible;
-                    grid_categories.Visibility = Visibility.Collapsed;
-                }
+
             }
             else
             {
@@ -408,27 +326,79 @@ namespace Collector_local_db
                 {
                     Lend_list.Visibility = Visibility.Collapsed;
                     grid_categories.Visibility = Visibility.Collapsed;
+                    return;
                 }
-                else
+              
+            }
+
+
+            ProgressUpload.Visibility = Visibility.Visible;
+            ProgressUpload.IsIndeterminate = true;
+            Borrow_list.ItemsSource = ((List<ProjectClasses.Entry>) await
+                SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
+                    "GetEntriesMoneyForUser/" + SerwerFunction.Uid + "/AndType/1", "GET", null)).ToList()
+                .Where(o => o.archived == 0);
+
+            Lend_list.ItemsSource = ((List<ProjectClasses.Entry>) await
+                SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
+                    "GetEntriesMoneyForUser/" + SerwerFunction.Uid + "/AndType/2", "GET", null)).ToList()
+                .Where(o => o.archived == 0);
+            
+
+
+            ProgressUpload.IsIndeterminate = false;
+            ProgressUpload.Visibility = Visibility.Collapsed;
+
+
+            if (temp2 == "Borrow")
+            {
+
+                if (Borrow_list.Visibility == Visibility.Collapsed)
+                {
+                    Borrow_list.Visibility = Visibility.Visible;
+                    grid_categories.Visibility = Visibility.Collapsed;
+                }
+
+            }
+            else
+            {
+                if(Lend_list.Visibility == Visibility.Collapsed)
                 {
                     Lend_list.Visibility = Visibility.Visible;
                     grid_categories.Visibility = Visibility.Collapsed;
                 }
             }
 
-
         }
-
 
 
         private async void objectButton_Click(object sender, RoutedEventArgs e)
         {
+            ButtonsVisibility(Visibility.Collapsed);
 
-            var CategoriesList = ((List<ProjectClasses.Category>)await
+
+            if (grid_categories.Visibility == Visibility.Visible)
+                {
+                    Borrow_list.Visibility = Visibility.Collapsed;
+                    Borrow_list.Visibility = Visibility.Collapsed;
+                    grid_categories.Visibility = Visibility.Collapsed;
+                    return;
+                }
+
+            ProgressUpload.Visibility = Visibility.Visible;
+            ProgressUpload.IsIndeterminate = true;
+            ProjectClasses.AllCategories = ((List<ProjectClasses.Category>)await
                SerwerFunction.Getfromserver<List<ProjectClasses.Category>>(
                    "Categories/", "GET", null)).ToList();
 
-            for (var i = 0; i < CategoriesList.Count; i++)
+            
+            ProgressUpload.IsIndeterminate = false;
+            ProgressUpload.Visibility = Visibility.Collapsed;
+
+
+            grid_categories.Children.Clear();
+
+            for (var i = 0; i < ProjectClasses.AllCategories.Count; i++)
             {
                 var gridRow1 = new RowDefinition { Height = new GridLength(35) };
 
@@ -439,7 +409,7 @@ namespace Collector_local_db
                 {
                     Width = 300,
                     Height = 30,
-                    Content = CategoriesList.ElementAt(i).cname
+                    Content = ProjectClasses.AllCategories.ElementAt(i).cname
                 };
                 category.Click += fill_categories;
 
@@ -453,25 +423,89 @@ namespace Collector_local_db
             }
 
 
-            edit_button.Visibility = Visibility.Collapsed;
-            remove_button.Visibility = Visibility.Collapsed;
-            if (grid_categories.Visibility == Visibility.Visible)
-            {
-                grid_categories.Visibility = Visibility.Collapsed;
-                Lend_list.Visibility = Visibility.Collapsed;
-                Borrow_list.Visibility = Visibility.Collapsed;
+ 
 
-            }
-            else
-            {
-                grid_categories.Visibility = Visibility.Visible;
-                Lend_list.Visibility = Visibility.Collapsed;
-                Borrow_list.Visibility = Visibility.Collapsed;
-            }
+
+            
+
+                if (grid_categories.Visibility == Visibility.Collapsed)
+                {
+                    Lend_list.Visibility = Visibility.Collapsed;
+                    Borrow_list.Visibility = Visibility.Collapsed;
+                    grid_categories.Visibility = Visibility.Visible;
+                }
+
+            
+            
+
 
 
 
         }
+
+
+        private async void fill_categories(object sender, RoutedEventArgs e)
+        {
+            var itemInCategory = sender as Button;
+
+
+            ProgressUpload.Visibility = Visibility.Visible;
+            ProgressUpload.IsIndeterminate = true;
+
+
+            int catid =
+                           (int)
+                               await
+                                   SerwerFunction.Getfromserver<int>(
+                                       "GetCategoryIdFromName/" + (string)itemInCategory.Content, "GET",
+                                      null);
+
+
+            Borrow_list.ItemsSource =
+
+                ((List<ProjectClasses.Entry>)await
+                SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
+                    "GetEntriesForUser/" + SerwerFunction.Uid + "/AndType/1/AndObjCategory/" + catid, "GET", null)).ToList().Where(o => o.archived == 0);
+
+            Lend_list.ItemsSource =
+
+                ((List<ProjectClasses.Entry>)await
+                SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
+                    "GetEntriesForUser/" + SerwerFunction.Uid + "/AndType/2/AndObjCategory/" + catid, "GET", null)).ToList().Where(o => o.archived == 0);
+
+
+            ProgressUpload.IsIndeterminate = false;
+            ProgressUpload.Visibility = Visibility.Collapsed;
+
+            hide_all(_pCategoryButtons);
+            objectBorrowButton.IsEnabled = false;
+            Category_choosen.Visibility = Visibility.Visible;
+            Category_choosen.Content = (string)itemInCategory.Content;
+
+            Borrow_list.Visibility = Visibility.Visible;
+            Lend_list.Visibility = Visibility.Visible;
+
+
+        }
+
+
+        private void ShowElementsInCategory(object sender, RoutedEventArgs e)
+        {
+            var temp2 = (string)((PivotItem)general_pivot.SelectedItem).Header;
+
+            var clickedCategory = sender as Button;
+            objectBorrowButton.IsEnabled = true;
+            clickedCategory.Visibility = Visibility.Collapsed;
+
+            if (temp2 == "Borrow")
+                Borrow_list.Visibility = Visibility.Collapsed;
+            else
+                Lend_list.Visibility = Visibility.Collapsed;
+
+            show_all(_pCategoryButtons);
+
+        }
+
 
         private async void EditButton(object sender, RoutedEventArgs e)
         {
@@ -503,25 +537,24 @@ namespace Collector_local_db
 
         private void Lend_list_GotFocus(object sender, RoutedEventArgs e)
         {
-            edit_button.Visibility = Visibility.Visible;
-            remove_button.Visibility = Visibility.Visible;
+            ButtonsVisibility(Visibility.Visible);
         }
 
         private void Borrow_list_GotFocus(object sender, RoutedEventArgs e)
         {
 
-            edit_button.Visibility = Visibility.Visible;
-            remove_button.Visibility = Visibility.Visible;
+            ButtonsVisibility(Visibility.Visible);
         }
 
 
 
         private async void remove_debt(object sender, RoutedEventArgs e)
         {
-            var temp2 = (string)((PivotItem)general_pivot.SelectedItem).Header;
-            ProjectClasses.Entry ent = null;
+           
 
-                var selectedItemLend = (ProjectClasses.Entry)Lend_list.SelectedItem;
+            var temp2 = (string)((PivotItem)general_pivot.SelectedItem).Header;
+
+            var selectedItemLend = (ProjectClasses.Entry)Lend_list.SelectedItem;
                 var selectedItemBorrow = (ProjectClasses.Entry)Borrow_list.SelectedItem;
                 if (selectedItemBorrow == null && selectedItemLend == null) return;
 
@@ -539,7 +572,10 @@ namespace Collector_local_db
 
             entryGet.archived = 1;
 
-            entryGet =
+
+            var typeid = entryGet.Type.tid;
+
+            var entryPost =
                           (ProjectClasses.Entry)
                               await
                                   SerwerFunction.Getfromserver<ProjectClasses.Entry>(
@@ -547,21 +583,55 @@ namespace Collector_local_db
                                      entryGet);
 
 
-            var typeid = entryGet.Type.tid;
 
 
 
 
-            //if (typeid == 1)
-            //    Borrow_list.ItemsSource = (entryGet.Object != null) ? db.Entries.Where(o => o.Object != null && o.Type.tid == typeid && ent.archived == 0).ToList() : db.Entries.Where(o => o.Object == null && o.Type.tid == typeid && ent.archived == 0).ToList();
-            //else
-            //    Lend_list.ItemsSource = (entryGet.Object != null) ? db.Entries.Where(o => o.Object != null && o.Type.tid == typeid && ent.archived == 0).ToList() : db.Entries.Where(o => o.Object == null && o.Type.tid == typeid && ent.archived == 0).ToList();
 
 
+            if (typeid == 1)
+            {
+                if (entryGet.Object != null)
+                {
+                    Borrow_list.ItemsSource = ((List<ProjectClasses.Entry>) await
+                        SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
+                            "GetEntriesForUser/" + SerwerFunction.Uid + "/AndType/1/AndObjCategory/" +
+                            entryGet.Object.catid, "GET", null)).ToList().Where(o => o.archived == 0);
+                }
+                else
+                {
+                    Borrow_list.ItemsSource = ((List<ProjectClasses.Entry>)await
+                SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
+                    "GetEntriesMoneyForUser/" + SerwerFunction.Uid + "/AndType/1", "GET", null)).ToList().Where(o => o.archived == 0);
+                }
+
+
+              
+            }
+            else
+            {
+                if (entryGet.Object != null)
+                {
+                    Lend_list.ItemsSource = ((List<ProjectClasses.Entry>)await
+                        SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
+                            "GetEntriesForUser/" + SerwerFunction.Uid + "/AndType/2/AndObjCategory/" +
+                            entryGet.Object.catid, "GET", null)).ToList().Where(o => o.archived == 0);
+                }
+                else
+                {
+                    Lend_list.ItemsSource = ((List<ProjectClasses.Entry>)await
+                SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
+                    "GetEntriesMoneyForUser/" + SerwerFunction.Uid + "/AndType/2", "GET", null)).ToList().Where(o => o.archived == 0);
+                }
+
+            }
+            ButtonsVisibility(Visibility.Collapsed);
         }
 
         private async void send_debt(object sender, RoutedEventArgs e)
         {
+            ButtonsVisibility(Visibility.Collapsed);
+
             ProjectClasses.AllUsers = ((List<ProjectClasses.User>)await
                SerwerFunction.Getfromserver<List<ProjectClasses.User>>(
                    "Users", "GET", null)).ToList();
@@ -570,7 +640,7 @@ namespace Collector_local_db
                 Title = "Send this to:",
                 RequestedTheme = ElementTheme.Dark,
         
-                MaxWidth = this.ActualWidth
+                MaxWidth = ActualWidth
             };
 
             // Setup Content
@@ -585,7 +655,7 @@ namespace Collector_local_db
 
             };
 
-            usrnName.TextChanged += (AutoSuggestBox sender2, AutoSuggestBoxTextChangedEventArgs args) =>
+            usrnName.TextChanged += (sender2, args) =>
             {
                 if (args.Reason != AutoSuggestionBoxTextChangeReason.UserInput) return;
                 if (sender2.Text.Length > 0)
@@ -595,7 +665,7 @@ namespace Collector_local_db
                 }
                 else
                 {
-                    sender2.ItemsSource = new string[] { "No suggestions..." };
+                    sender2.ItemsSource = new[] { "No suggestions..." };
                     dialog.IsPrimaryButtonEnabled = false;
                 }
             };
@@ -610,7 +680,6 @@ namespace Collector_local_db
             {
 
                 var temp2 = (string)((PivotItem)general_pivot.SelectedItem).Header;
-                ProjectClasses.Entry ent = null;
 
                 var selectedItemLend = (ProjectClasses.Entry)Lend_list.SelectedItem;
                 var selectedItemBorrow = (ProjectClasses.Entry)Borrow_list.SelectedItem;
@@ -663,9 +732,7 @@ namespace Collector_local_db
             };
                 dialog.SecondaryButtonText = "Cancel";
             dialog.SecondaryButtonClick += delegate
-            {
-                return;
-            };
+            { };
 
 
             var result = dialog.ShowAsync();
@@ -687,16 +754,15 @@ namespace Collector_local_db
         private void Logout_click(object sender, PointerRoutedEventArgs e)
         {
 
+            ButtonsVisibility(Visibility.Collapsed);
+
             var dialog = new ContentDialog()
             {
                 Title = "Log in:",
                 RequestedTheme = ElementTheme.Dark,
 
-                MaxWidth = this.ActualWidth
+                MaxWidth = ActualWidth
             };
-
-            // Setup Content
-            var panel = new StackPanel();
 
             var usrnName = new TextBox()
             {
@@ -706,9 +772,7 @@ namespace Collector_local_db
 
             };
 
-
-
-            panel.Children.Add(usrnName);
+            
             var passwd = new PasswordBox
             {
                 PlaceholderText = "Password:",
@@ -725,7 +789,7 @@ namespace Collector_local_db
                 dialog.IsPrimaryButtonEnabled = (passwd.Password != "" && usrnName.Text != "") ? true : false;
             };
 
-            panel.Children.Add(passwd);
+           
 
 
             var cb = new CheckBox { Name = "registercheck" };
@@ -735,18 +799,20 @@ namespace Collector_local_db
                 Orientation = Orientation.Horizontal,
                 Children = { new TextBlock { Text = "I want to register \t" }, cb }
             };
-
-            panel.Children.Add(dockTop);
+            var panel = new StackPanel
+            {
+                Children = { usrnName, passwd, dockTop }
+                
+            };
 
             dialog.Content = panel;
 
-            // Add Buttons
             dialog.PrimaryButtonText = "Log";
             dialog.IsPrimaryButtonEnabled = false;
 
             dialog.PrimaryButtonClick += async delegate
             {
-                var namepath = (cb.IsChecked.HasValue && cb.IsChecked.Value == true)
+                var namepath = cb.IsChecked.HasValue && cb.IsChecked.Value
                     ? "RegisterUser"
                     : "LoginUser";
                 try
@@ -762,8 +828,8 @@ namespace Collector_local_db
 
 
 
-                    SerwerFunction.password = respondLoginInfo.token;
-                    SerwerFunction.login = respondLoginInfo.login;
+                    SerwerFunction.password = respondLoginInfo?.token;
+                    SerwerFunction.login = respondLoginInfo?.login;
                     SerwerFunction.Uid = respondLoginInfo.uid;
                     TitleBlock.Text = "COLLECTOR - welcome: " + respondLoginInfo.login;
 
@@ -785,8 +851,22 @@ namespace Collector_local_db
 
             var result = dialog.ShowAsync();
         }
+
+        private void StatsClick(object sender, PointerRoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(Charts));
+        }
+
+
+        private void ButtonsVisibility(Visibility vis)
+        {
+            
+            send_button.Visibility = vis;
+            remove_button.Visibility = vis;
+            edit_button.Visibility = vis;
+        }
     }
-    }
+}
 
 
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Entity;
+﻿using System.Collections.Generic;
+using Microsoft.Data.Entity;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -18,12 +19,16 @@ namespace Collector_local_db
         }
 
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-           
-                //Trach_list.ItemsSource = db.Entries.Where(o => o.archived == 0).ToList();
 
-                removeButton.Visibility = Visibility.Collapsed;
+            Trach_list.ItemsSource = ProjectClasses.AllArchivedEntrys =((List<ProjectClasses.Entry>)await
+              SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
+                  "GetEntriesForUserArchived/"+SerwerFunction.Uid, "GET", null)).ToList();
+
+           
+
+            removeButton.Visibility = Visibility.Collapsed;
                 reviveButton.Visibility = Visibility.Collapsed;
             
         }
@@ -36,56 +41,48 @@ namespace Collector_local_db
             reviveButton.Visibility = Visibility.Visible;
         }
 
-        private void remove_button(object sender, RoutedEventArgs e)
+        private async void remove_button(object sender, RoutedEventArgs e)
         {
             var selectedItem = (ProjectClasses.Entry)Trach_list.SelectedItem;
             if (selectedItem == null) return;
             var id = selectedItem.id;
 
-           
+          var test = (ProjectClasses.Entry)await
+             SerwerFunction.Getfromserver<ProjectClasses.Entry>(
+                 "Entries/" + id, "DELETE", null);
 
 
-                //var ent = (from d in db.Entries
-                //    .Include(usr => usr.Object)
-                //    .Include(usr => usr.Currency)
-                //    .Include(usr => usr.Type)
-                //    .Include(usr => usr.Object.Category)
-                //    where d.id == id
-                //    select d).FirstOrDefault();
+
+            Trach_list.ItemsSource = ProjectClasses.AllArchivedEntrys = ((List<ProjectClasses.Entry>)await
+              SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
+                  "GetEntriesForUserArchived/" + SerwerFunction.Uid, "GET", null)).ToList();
 
 
-                //db.Remove(ent);
-                //db.SaveChanges();
-                //Trach_list.ItemsSource = db.Entries.Where(o => o.archived == 1).ToList();
 
-
-            
         }
 
-        private void revive_button(object sender, RoutedEventArgs e)
+        private async void revive_button(object sender, RoutedEventArgs e)
         {
             var selectedItem = (ProjectClasses.Entry)Trach_list.SelectedItem;
             if (selectedItem == null) return;
 
             var id = selectedItem.id;
 
-            
+            var ent = ProjectClasses.AllArchivedEntrys.FirstOrDefault(o => o.id == id);
 
-                //var ent = (from d in db.Entries
-                //    .Include(usr => usr.Object)
-                //    .Include(usr => usr.Currency)
-                //    .Include(usr => usr.Type)
-                //    .Include(usr => usr.Object.Category)
-                //    where d.id == id
-                //    select d).FirstOrDefault();
 
-                //ent.archived = 0;
+            ent.archived = 0;
 
-                //db.SaveChanges();
+            var received_debt = (ProjectClasses.Entry)await SerwerFunction.Getfromserver<ProjectClasses.Entry>("Entries/" + id, "PUT", ent);
 
-                //Trach_list.ItemsSource = db.Entries.Where(o => o.archived == 1).ToList();
 
-            
+            Trach_list.ItemsSource = ProjectClasses.AllArchivedEntrys = ((List<ProjectClasses.Entry>)await
+              SerwerFunction.Getfromserver<List<ProjectClasses.Entry>>(
+                  "GetEntriesForUserArchived/" + SerwerFunction.Uid, "GET", null)).ToList();
+
+
+
+
         }
     }
 
